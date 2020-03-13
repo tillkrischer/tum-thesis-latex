@@ -1,3 +1,11 @@
 % !TeX root = ../main.tex
 % Add the above to each chapter to make compiling the PDF easier in some editors.
 \chapter{Related Work}\label{chapter:related}
+
+In this paper we looked in detail at to approaches of generating time-series HMMs and SSA. However there are countless other approaches out there. Noteable ones include ARIMA and GARCH, Exponential Smoothing, Support Vector Regression, and Simple Linear Regression (Reference). An advanced tool is called GRATIS. It allows for the generation of time-series with controllable characterisics. The underlying model is the Mixture autoregressive model. (Reference)
+
+We also used generated time-series for benchmarking. There exists a tool specifically for this use case: LIMBO. It offers an Eclipse based tool for both contructing time series from components and for learnig time-series structure from training data. The underlying model in this case is the Descartes Load Intensity Model. \parencite{v2014limbo}
+
+A big part of this paper was implementing Hidden Markov Models in Python. The standard HMM library for python is called hmmlearn. (Reference) It supports all HMM variants inculuding discrete, semi-continous, and continous. Additionally it also supports multivariate versions of all these. 
+
+Another part of this paper was implementing the Baum-Welch algorithm in Spark. While it does not include this particular algorithm, the library Mllib implements many machine learning algorithms on top of Spark. (Reference)
