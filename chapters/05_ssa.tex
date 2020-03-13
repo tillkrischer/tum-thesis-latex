@@ -1,0 +1,153 @@
+% !TeX root = ../main.tex
+% Add the above to each chapter to make compiling the PDF easier in some editors.
+
+\chapter{Singular Spectrum Analysis}\label{chapter:ssa}
+
+The second approach used in the time series generation tool is Singular Spectrum Anlysis (SSA). SSA is a method of time-series analyis with very differnt properties to Hidden Markov Models, which provides a nice contrast. The applications of SSA include time-series decomposition, filteration, and forecasting. 
+
+SSA differs from many appraches of time-series anlysis including HMMs in that there is no model assumed for the time series beforehand. Still SSA can identify features of a time series like trends and preiodicities. The structure of these components is defined as linear recurrence relations, which are similar but not the same as autoregressive model. (Refrerence)
+
+The main task of SSA is to decompose a time-series into a sum of components. It does this without any prior knowledge of the structure of the time seris. 
+
+\section{SSA decomposition algorithm}
+
+Let $X$ be a time series of length N. The first step of the decomposition algorithm is to choose a winodw length $L$. Where $1 < L < N$. 
+
+\begin{equation}
+   X = (x_1, x_2, \ldots ,x_N)^T
+\end{equation}
+
+Next is the embedding step in which we create the so called trajectory matrix. The trajectory matrix $T$ is a sequence of lagged vaectors of size L. 
+
+\begin{equation}
+   T = 
+\left(\begin{array}{ccccc}
+x_{1} & x_{2} & x_{3} & \dots & x_{N-L+1} \\
+x_{2} & x_{3} & x_{4} & \dots & x_{N-L+2} \\
+x_{3} & x_{4} & x_{5} & \dots & x_{N-L+3} \\
+\vdots & \vdots & \vdots & \ddots & \vdots \\
+x_{L} & x_{L+1} & x_{L+2} & \dots & x_{N}
+\end{array}\right)
+   \label{eq:ssa-trajectory}
+\end{equation}
+
+Note that both the rows and columns of the trajectory matrix are subseris of X and that the valus on the anti-diagonal are all the same. A matrix of this for is called a Hankel matrix. 
+
+Next is the decomposition step. The idea is to find an orthonormal basis ${P_i}^L$ and decompose the trajectory matrix like this: 
+
+\begin{equation}
+   \begin{aligned}
+   T&=\sum_{i=1}^{L} P_{i} Q_{i}^{\mathrm{T}}=\mathrm{X}_{1}+\ldots+\mathrm{X}_{L} \\
+   \text{where} \;\; Q_i &= T^TP_i
+   \end{aligned}
+   \label{eq:ssa-decomposition}
+\end{equation}
+
+There are multiple choices for a basis. In this case we chosse ${P_i}^L$ to be the egienvectors of $TT^T$. These can be obtained using Singular Value Decomposition. 
+
+Given a matrix A Singular Value decomposition returns U, V, and S such that $A = USV^T$. $U$ and $V$ are orthogonal matricies, meaning their prodcut with themselves is the identity matrix. $S$ is a diagonal matrix. The colums of $U$ are the eigenvectors of $AA^T$ and the colums of $V$ are the eigenvectors of $A^TA$. The entries of $S$ are square roots of the eigenvalues of $AA^T$ or $A^TA$. The order of the eigenvalues in S is from highes to lowest. 
+
+The Singular Value decomposition of the trajectory matrix $T$ can be expressed like this: 
+
+\begin{equation}
+T=\sum_{i} \sqrt{\lambda_{i}} U_{i} V_{i}^{\mathrm{T}}
+\end{equation}
+
+With $\lambda_i$ being the i'th eigenvalue.
+
+This is is the format we were looking for in Equation \eqref{eq:ssa-decomposition}. We have already defined $P_i=U_i$ which makes $Q_i = \sqrt{\lambda_i}V_i$. This completes the decomposisiton step.
+
+\section{Eigentriple Grouping}
+
+The results of the Singlar Value Decomposition $(\lambda_i, U_i, V_i)$ are refered to as eigentriples. One eigentriple does not necessarily correspond to one component of the time series. Components that SSA can identify include since waves, trends, and seasonality. These all correspond to a group of eigentriples. 
+
+Formally we pick all the eigenvectors greater than 0:
+
+\begin{equation}
+  d=\max \left\{j: \lambda_{j} \neq 0\right\} 
+\end{equation}
+
+Then consider the set of indecies $\{1, \ldots, d\}$ and group it into $m$ subsets $I_1, \ldots, I_m$. Then use these to split up the trajectory matrix $T$. 
+
+\begin{equation}
+   \begin{aligned}
+      T&=\mathbf{X}_{I_{1}}+\ldots+\mathbf{X}_{I_{m}} \\
+      \text{where} \;\; \mathbf{X}_{I}&=\sum_{i \in I} \mathbf{X}_{i}
+   \end{aligned}
+\end{equation}
+  
+If the goal of the SSA analysis is to extract components like sine waves from the time series, a lot of care has to be taken when choosing these groupings. One can look at the so-called w-correlation matrix to figure out which components are correlated and which are seperable. Or you can use known facts like sinusoid components being always comprised of two sine wave components phase shifted by $\pi/2$. 
+
+For the time series generation application these considerations do not matter. It is enough to just obtain a approximation of the time series, which can be obtained in a straight forward way: We know that the eigentriples obtained from the Singular Value Decompostion are ordered my the eigenvalue. That means that the components that contribute most to the time-series come first. By just picking an $n$ and grouping together the first $n$ eigentriples, we receive a good approximation of the original time-series. 
+
+\section{Diagonal Averaging}
+
+So for we have only operated on the trajectory matrix and broken it up into components. This means that all the components are in matrix form. To return them to the time-series format we apply diagonal averaging. 
+
+As the name suggests it works by averaging over the antidiagonals of a matrix. Consider a $L\times K$ matrix. The antidiagonals are defined like this: 
+
+\begin{equation}
+A_{s}=\{(l, k): l+k=s+1,1 \leq l \leq L, 1 \leq k \leq K\}
+\end{equation}
+
+To convert matrix $X$ into time-series $\tilde{x}$ we take the averages accross these antidiagonals. The time series $\tilde{x}$ is called the reconstructed time-series. 
+
+\begin{equation}
+    \widetilde{x}_{s}=\sum_{(l, k) \in A_{s}} X_{l k} /\left|A_{s}\right|
+\end{equation}
+
+
+\begin{figure}
+   \begin{equation*}
+      X = 
+      \begin{pmatrix}
+         1 & 2 & 3 & 4 \\
+         5 & 6 & 7 & 8 \\
+         9 & 10 & 11 & 12
+      \end{pmatrix}
+   \end{equation*}
+   \begin{equation*}
+      \begin{aligned}
+      \widetilde{x} &= (1, \frac{2+5}{2}, \frac{9 + 6 + 3}{3}, \frac{10 + 7 + 4}{3}, \frac{11 + 8}{2}, 12) \\
+      &= (1, 3.5, 6, 7, 9.5, 12)
+      \end{aligned}
+   \end{equation*}
+\caption{Diagonal Averaging Example}
+\label{fig:diagonal-averaging}
+\end{figure}
+
+Figure \ref{fig:diagonal-averaging} shows an example of diagonal averaging. 
+
+\section{Forecasting}
+
+With the described algorithm we can use SSA to identify the components of a time series and we can obtain an approximation. However this does not help with the goal of time-series generation. As mentioned before SSA does not asume an uderlying model of the time series. So we can not go the route of Hidden Markov Models where generate a series from model parameters. 
+
+What we can do however is forecasting of a given time series. While this does not give a brand new time-series it allows us to generate a infinite time-series based on a given finite time-series, which is good enough. 
+
+There are multiple approaches to forecsat using SSA. The most straight forward one is Recurrent Forecasting. It involves setting up a recurrence relation for the time series. Recurrence relating means a value is computed using its predecessors. With this we can continue the given time series by computing new values. 
+
+We take the same set of eigentriples $I$ that we picked during the eigentriple grouping. Let $P_i, \; i \in I$ be the eigenvectors of the eigentriple group. We split them up in the following way: $\underline{P_i}$ is everyting but the last coordinate of $P_i$ and $\pi_i$ is the last coordinate of $P_i$. 
+
+Define the vector $R = (a_{L-1}, \dots, a_1)^T$ like this:
+
+\begin{equation}
+   R=\frac{1}{1-\sum_{i \in I} \pi_{i}^{2}} \sum_{i \in I} \pi_{i} \underline{P}_{i}
+   \label{eq:r-def}
+\end{equation}
+
+With this the forecasted time series $y$ can be computed. The recursive definition looks like this:
+
+\begin{equation}
+  y_{i}=\left\{\begin{array}{ll}
+\widetilde{x}_{i} & \text { for } i=1, \ldots, N \\
+\sum_{j=1}^{L-1} a_{j} y_{i-j} & \text { for } i=N+1, \ldots, N+M
+\end{array}\right. 
+\end{equation}
+
+The $\tilde{x}$ is the reconstructed time-series obtained in the diagonal averaging step. 
+
+\section{Parameter Concerns}
+
+There are two parameters when generating time series with SSA using this approach. The first is the window length L. It should be sufficiently large. The larger the window the more information there is to identify components. When trying to find seasonal components the window length should be divisible by the suspected seasonality. On the other hand the windows length should not be larger than $N/2$. $N$ being the length of the original time-series. This is since the size of the trajectory matrix is $L \times N-L+1$. If $L$ is to large the trajectory matrix has to few columns. 
+
+The other parameter is the number of eigentriples used in the reconstruction $K$. Picking a smaller $K$ will result in a smoothed reconstruction, while bigger $K$ while result in a reconstruction very close to the original time-series. By design the latter components only have a small contribution to the result, so overfitting by picking a to large $K$ is not really a concern. The upper bound for $K$ is the window length $L$. This is becaue the trajectory matrix has $L$ rows and therefore can not have more than $K$ eigenvectors. 

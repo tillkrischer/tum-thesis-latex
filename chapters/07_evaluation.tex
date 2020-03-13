@@ -1,0 +1,22 @@
+% !TeX root = ../main.tex
+% Add the above to each chapter to make compiling the PDF easier in some editors.
+
+\chapter{Evaluation of the Approaches}\label{chapter:evaluation}
+
+Having looked at the to approaches of generating time-series in detail in both theory and implementation we can evalute their strength and weaknesses and how they compare to each other. 
+
+\section{HMM}
+
+We first look Hidden Markov Models. HMMs are a robust method of analysing time series. We have a solid algorithm for learning parameters in Baum-Welch that can deal with a lot of input data, including multiple seperate time-series. It can even be implemented in a distributed fashion. 
+
+By assuming an underlying model of the data HMMs are well suited for the generation task. We can use learned parameters or specify parameters manually and achieve useful results. Moreover a single set of parameters get generate infinetly many time-series. 
+
+The main downside of HMMs is also their defining characteristic, the Markov Property. Every output only depends on its predecessor. That constrains the aproach a lot, by making it very hard to maintain any state. Theoretically to have n bits of state in a HMM we would need $2^n$ hidden states. The Markov Property also makes it impossible to model any kind of seasonality with HMMs. 
+
+\section{SSA}
+
+The weakness of HMMs, the handling of seasonlity, is the strength of Singular Spectrum Anlysis. Given a time series with seasonality SSA will often automatically, that is without any knowloadge of the series structure, and contine the series. 
+
+However SSA is fucndamentally not well suited for a straight generation task, simply becasue it is not a generative model. We can only generate by forecasting an existing time-series. This means that for one input time-series there is only on generated time-series. (With minor variations when adjusting the parameters of windows length and number of compnents.)
+
+Finally SSA does not deal well with data where there is no seasonality or stationary componets to extract. In those cases forecast do not make sense. In the worst case they are completly off becaue of the recurrent nature of the forecast that makes errors compound as you go further along in the forecast. 

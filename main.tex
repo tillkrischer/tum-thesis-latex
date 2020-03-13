@@ -10,13 +10,13 @@
 % TODO: change thesis information
 \newcommand*{\getUniversity}{Technische Universität München}
 \newcommand*{\getFaculty}{Department of Informatics}
-\newcommand*{\getTitle}{Thesis title}
-\newcommand*{\getTitleGer}{Titel der Abschlussarbeit}
-\newcommand*{\getAuthor}{Author}
-\newcommand*{\getDoctype}{Thesis type (Bachelor's Thesis in Informatics, Master's Thesis in Robotics, \ldots)}
-\newcommand*{\getSupervisor}{Supervisor}
-\newcommand*{\getAdvisor}{Advisor}
-\newcommand*{\getSubmissionDate}{Submission date}
+\newcommand*{\getTitle}{Time Series Generation with Hidden Markov Models and Singular Spectrum Analysis}
+\newcommand*{\getTitleGer}{Zeitreihengenerierung mit Hidden Markov Modellen und singulärer Spektrumanalyse}
+\newcommand*{\getAuthor}{Till Krischer}
+\newcommand*{\getDoctype}{Master's Thesis}
+\newcommand*{\getSupervisor}{Prof. Dr. Michael Gerndt}
+\newcommand*{\getAdvisor}{Vladimir Podolskiy}
+\newcommand*{\getSubmissionDate}{16.03.2020}
 \newcommand*{\getSubmissionLocation}{Munich}
 
 \begin{document}
@@ -39,7 +39,16 @@
 \mainmatter{}
 
 \input{chapters/01_introduction}
-% TODO: add more chapters here
+\input{chapters/02_hmm}
+\input{chapters/03_hmm_impl}
+\input{chapters/04_hmm_dist}
+\input{chapters/05_ssa}
+\input{chapters/06_ssa_impl}
+\input{chapters/07_evaluation}
+\input{chapters/08_tool}
+\input{chapters/09_benchmark}
+\input{chapters/10_related}
+
 
 \appendix{}
 
@@ -50,3 +59,4 @@
 \printbibliography{}
 
 \end{document}
+
