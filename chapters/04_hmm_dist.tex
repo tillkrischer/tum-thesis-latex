@@ -9,13 +9,13 @@ Learning Hidden Markov Model parameters using the Baum-Welch algorithm can be re
 
 While not impossible, it would be very difficult to create a distributed program like this from scratch. Certainly it would be to much for a paper like this. This is where distributed computing frameworks come in that do a lot of the work for you. 
 
-In this paper the distributed computing framework of choice is Apache Spark. Spark is an open-source distributed general-purpose cluster-computing framework. There are many reasons to chose Spark, one being performance. Spark uses a state-of-the-art DAG scheduler, query optimizer, and physical execution engine. Spark also offers in memory processing to avoid writing to disk. These technologies cause Spark to complete tasks up to 100 times faster that its alternatives for example Hadoop. 
+In this paper the distributed computing framework of choice is Apache Spark. Spark is an open-source distributed general-purpose cluster-computing framework. There are many reasons to chose Spark, one being performance. Spark uses a state-of-the-art DAG scheduler, query optimizer, and physical execution engine. Spark also offers in memory processing to avoid writing to disk. These technologies cause Spark to complete tasks up to 100 times faster that its alternatives for example Hadoop. \parencite{zaharia2016apache}
 
 Spark is also has a lot of general applicability. Using various libraries on top of Spark it can be used in various scenarios. For example Spark SQL for queries, MLib for machine learning applications, GraphX for Graph operations, and Spark Streaming for streaming instead of batch operations. 
 
-However the most important reason to chose it for this project is Spark's ease of use. Spark has API in many languages like Java, Scala, Python, R, and SQL. Since we already have a python implementation, the Python API called pyspark is a great choice. In all these languages the API is high-level making it simple to create distributed computation code. (Refernce)
+However the most important reason to chose it for this project is Spark's ease of use. Spark has API in many languages like Java, Scala, Python, R, and SQL. Since we already have a python implementation, the Python API called pyspark is a great choice. In all these languages the API is high-level making it simple to create distributed computation code. \parencite{pyspark}
 
-The most important concept in Spark are Resilient Distributed Datasets (RDDs). They are fault tolerant collection of data which is operated on in parallel. There are two types of operations on RDDs: transformations and actions. Transformations create a new dataset from the original. An example of a transformation is "map". "map" applies a function to every member of a dataset. The result of this is a new dataset. An action returns a value after running over the dataset. An example for an action is "reduce". "reduce" aggregates the elements of the dataset using some function and returns the result. (Reference rdd programming guide)
+The most important concept in Spark are Resilient Distributed Datasets (RDDs). They are fault tolerant collection of data which is operated on in parallel. There are two types of operations on RDDs: transformations and actions. Transformations create a new dataset from the original. An example of a transformation is "map". "map" applies a function to every member of a dataset. The result of this is a new dataset. An action returns a value after running over the dataset. An example for an action is "reduce". "reduce" aggregates the elements of the dataset using some function and returns the result. \parencite{rddguide}
 
 \section{Baum-Welch}
 \label{section:distributed-hmm}
@@ -35,7 +35,7 @@ The distributed computation is visualized in Figure \ref{fig:distributed}. Durin
 
 \section{Spark Implementation}
 
-As mentioned before the Python Spark API pyspark is very high-level. This means that most of the Baum-Welch implementation from the time-series generation tool can be used as is. The differences come from setting up the Resiliant Distributed Dataset that Spark can then work on. 
+As mentioned before the Python Spark API pyspark is very high-level. This means that most of the Baum-Welch implementation from the time-series generation tool can be used as is. The differences come from setting up the Resilient Distributed Dataset that Spark can then work on. \parencite{sparkhmm}
 
 \begin{figure}
 \begin{singlespace}

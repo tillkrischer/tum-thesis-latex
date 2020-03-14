@@ -8,11 +8,11 @@ Having implemented a tool for time series generation, we will now look at an app
 
 Apache Flink is an open-source framework for processing both streaming and batch data. Application of Flink include real-time analytics, historic data processing and various task in the machine learning and graph analysis field. Flink's paradigm is to use data-stream processing as the underlying model for all tasks. This includes batch processing, which in Flink is considered just a special case of stream processing, where the stream is finite. 
 
-Flink is a cluster computing platform. One Flink cluster consists of multiple parts: the client, the Job Manager and one or more Task Managers. The client turns a program into a dataflow graph and submits it to the Job Manager. The Job Manager is responsible for coordinating the execution of this dataflow graph. It schedules jobs for the Task Managers, which do the actual computation and report the results back to the Job Manager. 
+Flink is a cluster computing platform. One Flink cluster consists of multiple parts: the client, the Job Manager and one or more Task Managers. The client turns a program into a dataflow graph and submits it to the Job Manager. The Job Manager is responsible for coordinating the execution of this dataflow graph. It schedules jobs for the Task Managers, which do the actual computation and report the results back to the Job Manager. \parencite{carbone2015apache}
 
 \section{Flink Job: Pi Estimation}
 
-The idea is to benchmark Flink by submitting batch jobs to it according to our time series. For this we need a job that is sufficiently resource intensify to be noticeable. A good candidate comes from the Flink batch processing examples: a pi estimation job. Flink jobs are written in Java and the code for this job can be found at (Reference). 
+The idea is to benchmark Flink by submitting batch jobs to it according to our time series. For this we need a job that is sufficiently resource intensify to be noticeable. A good candidate comes from the Flink batch processing examples: a pi estimation job. Flink jobs are written in Java and the code for this job can be found at \parencite{flinkpiestim}. 
 
 The idea is tho pick random points by drawing x and y such that $0 < x, y < 1$. Then we check wether or not these points are in the unit circle with $x^2 + y^2 < 1$. We know that the area of the first quadrant segment of the unit circle is $\frac{\pi}{4}$ while the area of the square that the points all fall into is 1. From this we know that the fraction of the samples that fall in the unit-circle times 4 will approximate $\pi$.
 
@@ -29,7 +29,7 @@ From the time-series generation tool we receive a set of discrete time points ea
 \label{fig:normal-dists}
 \end{figure}
 
-At this point we have a sequence of absolute time points. For the benchmarking now we simply start a timer and whenever we hit one of these time points we submit a job. The script performing the benchmark hoes one step further. Since we can specify the amount of compute a job takes with a parameter we can simulate different kinds of jobs. The current scripts considers two generated time-series: one modeling one easy and one expensive job. 
+At this point we have a sequence of absolute time points. For the benchmarking now we simply start a timer and whenever we hit one of these time points we submit a job. The script performing the benchmark hoes one step further. Since we can specify the amount of compute a job takes with a parameter we can simulate different kinds of jobs. The current scripts considers two generated time-series: one modeling one easy and one expensive job. \parencite{flinktest}
 
 While submitting jobs according to the schedule at each full second we pull metrics from both the Flink Task Manager and the Job Manager. Using this we can monitor how Flink handles the simulated work load.
 

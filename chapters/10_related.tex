@@ -2,10 +2,10 @@
 % Add the above to each chapter to make compiling the PDF easier in some editors.
 \chapter{Related Work}\label{chapter:related}
 
-In this paper we looked in detail at to approaches of generating time-series HMMs and SSA. However there are countless other approaches out there. Notable ones include ARIMA and GARCH, Exponential Smoothing, Support Vector Regression, and Simple Linear Regression (Reference). An advanced tool is called GRATIS. It allows for the generation of time-series with controllable characteristics. The underlying model is the Mixture autoregressive model. (Reference)
+In this paper we looked in detail at to approaches of generating time-series HMMs and SSA. However there are countless other approaches out there. Notable ones include ARIMA and GARCH, Exponential Smoothing, Support Vector Regression, and Simple Linear Regression.\parencite{inproceedings} An advanced tool is called GRATIS. It allows for the generation of time-series with controllable characteristics. The underlying model is the Mixture autoregressive model. \parencite{kang2019gratis}
 
 We also used generated time-series for benchmarking. There exists a tool specifically for this use case: LIMBO. It offers an Eclipse based tool for both constructing time series from components and for learning time-series structure from training data. The underlying model in this case is the Descartes Load Intensity Model. \parencite{v2014limbo}
 
-A big part of this paper was implementing Hidden Markov Models in Python. The standard HMM library for python is called hmmlearn. (Reference) It supports all HMM variants including discrete, semi-continuos, and continuos. Additionally it also supports multivariate versions of all these. 
+A big part of this paper was implementing Hidden Markov Models in Python. The standard HMM library for python is called hmmlearn. \parencite{weiss2019hmmlearn} It supports all HMM variants including discrete, semi-continuos, and continuos. Additionally it also supports multivariate versions of all these. 
 
-Another part of this paper was implementing the Baum-Welch algorithm in Spark. While it does not include this particular algorithm, the library Mllib implements many machine learning algorithms on top of Spark. (Reference)
+Another part of this paper was implementing the Baum-Welch algorithm in Spark. While it does not include this particular algorithm, the library Mllib implements many machine learning algorithms on top of Spark. \parencite{meng2016mllib}
