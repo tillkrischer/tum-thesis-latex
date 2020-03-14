@@ -73,15 +73,15 @@ def fit(X, components, iterations):
 \label{fig:pyspark-fit-listing}
 \end{figure}
 
-Figure \ref{fig:pyspark-fit-listing} shows the implementation of the fit function for the distributed Baum-Welch algorithm. The function signiature is the same with the parameters X, components, and iterations. X is the training data, components is the number of hidden states and iterations is the number of iteration of the EM-algorithm. 
+Figure \ref{fig:pyspark-fit-listing} shows the implementation of the fit function for the distributed Baum-Welch algorithm. The function signature is the same with the parameters X, components, and iterations. X is the training data, components is the number of hidden states and iterations is the number of iteration of the EM-algorithm. 
 
-First the parameters of the HMM get initialized in the same way as the regular code. Then the main loop follows applying the specified number of iterations. Then comes the E-step which is where the differences start. We set up an array of "dataobjs", one for each time-series in the traing data set. The objects each contain a "data" entry which contains the time-series. Additionally they also have entries for all the current parameters of the HMM. 
+First the parameters of the HMM get initialized in the same way as the regular code. Then the main loop follows applying the specified number of iterations. Then comes the E-step which is where the differences start. We set up an array of "dataobjs", one for each time-series in the training data set. The objects each contain a "data" entry which contains the time-series. Additionally they also have entries for all the current parameters of the HMM. 
 
-Now we set up the Resiliant Distributed Dataset. An RDD can be created from any collection of data, in this case it is a python array. In line 16 using the Spark Context we call parallelize on the dataobjs array which turns it into an RDD. For the sake of example in this case it is split into two parts. 
+Now we set up the Resilient Distributed Dataset. An RDD can be created from any collection of data, in this case it is a python array. In line 16 using the Spark Context we call parallelize on the dataobjs array which turns it into an RDD. For the sake of example in this case it is split into two parts. 
 
-Having created the RDD next we want to apply the E-step on each of its entries. This happends through the RDD operation "map". This causes the funtion "process" to be applied to every RDD entry creating a new RDD "processed" containing the results. 
+Having created the RDD next we want to apply the E-step on each of its entries. This happens through the RDD operation "map". This causes the function "process" to be applied to every RDD entry creating a new RDD "processed" containing the results. 
 
-Next we have to sum up the intermediate values to prepare for the M-step. This is achived by the RDD operation "reduce". This goes through the "processed" RDD and accumulates the intermediate values according to the function "sum\_interm\_values". "reduce" returns the "interm" obj from which we extract the intermediate values of the E-step. Since we are considering a semi-continuos HMM, there is not just $\gamma$ and $\xi$, but the same 5 intermediate values that we already observed in the E-step in the regular Baum-Welch implementation. 
+Next we have to sum up the intermediate values to prepare for the M-step. This is achieved by the RDD operation "reduce". This goes through the "processed" RDD and accumulates the intermediate values according to the function "sum\_interm\_values". "reduce" returns the "interm" obj from which we extract the intermediate values of the E-step. Since we are considering a semi-continuos HMM, there is not just $\gamma$ and $\xi$, but the same 5 intermediate values that we already observed in the E-step in the regular Baum-Welch implementation. 
 
 Finally the M-step is executed through the function "update\_params" just as before. 
 
@@ -148,4 +148,4 @@ def process(dataobj):
 \label{fig:pyspark-process-listing}
 \end{figure}
 
-Figure \ref{fig:pyspark-process-listing} show the "process" function. First it extracts its parameters from the single parameter object "dataobj". Then it perfoms the regular E-step on its given time series by executing the forward and backward algorithm and then computing the necessary intermediate values. Then it assembles them in a resultobj and returns it. These result objects will be the entries of the new processed RDD.
+Figure \ref{fig:pyspark-process-listing} show the "process" function. First it extracts its parameters from the single parameter object "dataobj". Then it performs the regular E-step on its given time series by executing the forward and backward algorithm and then computing the necessary intermediate values. Then it assembles them in a resultobj and returns it. These result objects will be the entries of the new processed RDD.

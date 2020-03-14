@@ -3,21 +3,21 @@
 
 \chapter{Singular Spectrum Analysis}\label{chapter:ssa}
 
-The second approach used in the time series generation tool is Singular Spectrum Anlysis (SSA). SSA is a method of time-series analyis with very differnt properties to Hidden Markov Models, which provides a nice contrast. The applications of SSA include time-series decomposition, filteration, and forecasting. 
+The second approach used in the time series generation tool is Singular Spectrum Analysis (SSA). SSA is a method of time-series analysis with very different properties to Hidden Markov Models, which provides a nice contrast. The applications of SSA include time-series decomposition, filteration, and forecasting. 
 
-SSA differs from many appraches of time-series anlysis including HMMs in that there is no model assumed for the time series beforehand. Still SSA can identify features of a time series like trends and preiodicities. The structure of these components is defined as linear recurrence relations, which are similar but not the same as autoregressive model. (Refrerence)
+SSA differs from many approaches of time-series analysis including HMMs in that there is no model assumed for the time series beforehand. Still SSA can identify features of a time series like trends and periodicities. The structure of these components is defined as linear recurrence relations, which are similar but not the same as autoregressive model. (Refrerence)
 
-The main task of SSA is to decompose a time-series into a sum of components. It does this without any prior knowledge of the structure of the time seris. 
+The main task of SSA is to decompose a time-series into a sum of components. It does this without any prior knowledge of the structure of the time series. 
 
 \section{SSA decomposition algorithm}
 
-Let $X$ be a time series of length N. The first step of the decomposition algorithm is to choose a winodw length $L$. Where $1 < L < N$. 
+Let $X$ be a time series of length N. The first step of the decomposition algorithm is to choose a window length $L$. Where $1 < L < N$. 
 
 \begin{equation}
    X = (x_1, x_2, \ldots ,x_N)^T
 \end{equation}
 
-Next is the embedding step in which we create the so called trajectory matrix. The trajectory matrix $T$ is a sequence of lagged vaectors of size L. 
+Next is the embedding step in which we create the so called trajectory matrix. The trajectory matrix $T$ is a sequence of lagged vectors of size L. 
 
 \begin{equation}
    T = 
@@ -31,7 +31,7 @@ x_{L} & x_{L+1} & x_{L+2} & \dots & x_{N}
    \label{eq:ssa-trajectory}
 \end{equation}
 
-Note that both the rows and columns of the trajectory matrix are subseris of X and that the valus on the anti-diagonal are all the same. A matrix of this for is called a Hankel matrix. 
+Note that both the rows and columns of the trajectory matrix are subseries of X and that the values on the anti-diagonal are all the same. A matrix of this for is called a Hankel matrix. 
 
 Next is the decomposition step. The idea is to find an orthonormal basis ${P_i}^L$ and decompose the trajectory matrix like this: 
 
@@ -43,9 +43,9 @@ Next is the decomposition step. The idea is to find an orthonormal basis ${P_i}^
    \label{eq:ssa-decomposition}
 \end{equation}
 
-There are multiple choices for a basis. In this case we chosse ${P_i}^L$ to be the egienvectors of $TT^T$. These can be obtained using Singular Value Decomposition. 
+There are multiple choices for a basis. In this case we choose ${P_i}^L$ to be the eigenvectors of $TT^T$. These can be obtained using Singular Value Decomposition. 
 
-Given a matrix A Singular Value decomposition returns U, V, and S such that $A = USV^T$. $U$ and $V$ are orthogonal matricies, meaning their prodcut with themselves is the identity matrix. $S$ is a diagonal matrix. The colums of $U$ are the eigenvectors of $AA^T$ and the colums of $V$ are the eigenvectors of $A^TA$. The entries of $S$ are square roots of the eigenvalues of $AA^T$ or $A^TA$. The order of the eigenvalues in S is from highes to lowest. 
+Given a matrix A Singular Value decomposition returns U, V, and S such that $A = USV^T$. $U$ and $V$ are orthogonal matrices, meaning their product with themselves is the identity matrix. $S$ is a diagonal matrix. The columns of $U$ are the eigenvectors of $AA^T$ and the columns of $V$ are the eigenvectors of $A^TA$. The entries of $S$ are square roots of the eigenvalues of $AA^T$ or $A^TA$. The order of the eigenvalues in S is from highest to lowest. 
 
 The Singular Value decomposition of the trajectory matrix $T$ can be expressed like this: 
 
@@ -55,11 +55,11 @@ T=\sum_{i} \sqrt{\lambda_{i}} U_{i} V_{i}^{\mathrm{T}}
 
 With $\lambda_i$ being the i'th eigenvalue.
 
-This is is the format we were looking for in Equation \eqref{eq:ssa-decomposition}. We have already defined $P_i=U_i$ which makes $Q_i = \sqrt{\lambda_i}V_i$. This completes the decomposisiton step.
+This is is the format we were looking for in Equation \eqref{eq:ssa-decomposition}. We have already defined $P_i=U_i$ which makes $Q_i = \sqrt{\lambda_i}V_i$. This completes the decomposition step.
 
 \section{Eigentriple Grouping}
 
-The results of the Singlar Value Decomposition $(\lambda_i, U_i, V_i)$ are refered to as eigentriples. One eigentriple does not necessarily correspond to one component of the time series. Components that SSA can identify include since waves, trends, and seasonality. These all correspond to a group of eigentriples. 
+The results of the Singular Value Decomposition $(\lambda_i, U_i, V_i)$ are referred to as eigentriples. One eigentriple does not necessarily correspond to one component of the time series. Components that SSA can identify include since waves, trends, and seasonality. These all correspond to a group of eigentriples. 
 
 Formally we pick all the eigenvectors greater than 0:
 
@@ -76,21 +76,21 @@ Then consider the set of indecies $\{1, \ldots, d\}$ and group it into $m$ subse
    \end{aligned}
 \end{equation}
   
-If the goal of the SSA analysis is to extract components like sine waves from the time series, a lot of care has to be taken when choosing these groupings. One can look at the so-called w-correlation matrix to figure out which components are correlated and which are seperable. Or you can use known facts like sinusoid components being always comprised of two sine wave components phase shifted by $\pi/2$. 
+If the goal of the SSA analysis is to extract components like sine waves from the time series, a lot of care has to be taken when choosing these groupings. One can look at the so-called w-correlation matrix to figure out which components are correlated and which are separable. Or you can use known facts like sinusoid components being always comprised of two sine wave components phase shifted by $\pi/2$. 
 
-For the time series generation application these considerations do not matter. It is enough to just obtain a approximation of the time series, which can be obtained in a straight forward way: We know that the eigentriples obtained from the Singular Value Decompostion are ordered my the eigenvalue. That means that the components that contribute most to the time-series come first. By just picking an $n$ and grouping together the first $n$ eigentriples, we receive a good approximation of the original time-series. 
+For the time series generation application these considerations do not matter. It is enough to just obtain a approximation of the time series, which can be obtained in a straight forward way: We know that the eigentriples obtained from the Singular Value Decomposition are ordered my the eigenvalue. That means that the components that contribute most to the time-series come first. By just picking an $n$ and grouping together the first $n$ eigentriples, we receive a good approximation of the original time-series. 
 
 \section{Diagonal Averaging}
 
 So for we have only operated on the trajectory matrix and broken it up into components. This means that all the components are in matrix form. To return them to the time-series format we apply diagonal averaging. 
 
-As the name suggests it works by averaging over the antidiagonals of a matrix. Consider a $L\times K$ matrix. The antidiagonals are defined like this: 
+As the name suggests it works by averaging over the anti-diagonals of a matrix. Consider a $L\times K$ matrix. The anti-diagonals are defined like this: 
 
 \begin{equation}
 A_{s}=\{(l, k): l+k=s+1,1 \leq l \leq L, 1 \leq k \leq K\}
 \end{equation}
 
-To convert matrix $X$ into time-series $\tilde{x}$ we take the averages accross these antidiagonals. The time series $\tilde{x}$ is called the reconstructed time-series. 
+To convert matrix $X$ into time-series $\tilde{x}$ we take the averages across these anti-diagonals. The time series $\tilde{x}$ is called the reconstructed time-series. 
 
 \begin{equation}
     \widetilde{x}_{s}=\sum_{(l, k) \in A_{s}} X_{l k} /\left|A_{s}\right|
@@ -120,13 +120,13 @@ Figure \ref{fig:diagonal-averaging} shows an example of diagonal averaging.
 
 \section{Forecasting}
 
-With the described algorithm we can use SSA to identify the components of a time series and we can obtain an approximation. However this does not help with the goal of time-series generation. As mentioned before SSA does not asume an uderlying model of the time series. So we can not go the route of Hidden Markov Models where generate a series from model parameters. 
+With the described algorithm we can use SSA to identify the components of a time series and we can obtain an approximation. However this does not help with the goal of time-series generation. As mentioned before SSA does not assume an underlying model of the time series. So we can not go the route of Hidden Markov Models where generate a series from model parameters. 
 
 What we can do however is forecasting of a given time series. While this does not give a brand new time-series it allows us to generate a infinite time-series based on a given finite time-series, which is good enough. 
 
-There are multiple approaches to forecsat using SSA. The most straight forward one is Recurrent Forecasting. It involves setting up a recurrence relation for the time series. Recurrence relating means a value is computed using its predecessors. With this we can continue the given time series by computing new values. 
+There are multiple approaches to forecast using SSA. The most straight forward one is Recurrent Forecasting. It involves setting up a recurrence relation for the time series. Recurrence relating means a value is computed using its predecessors. With this we can continue the given time series by computing new values. 
 
-We take the same set of eigentriples $I$ that we picked during the eigentriple grouping. Let $P_i, \; i \in I$ be the eigenvectors of the eigentriple group. We split them up in the following way: $\underline{P_i}$ is everyting but the last coordinate of $P_i$ and $\pi_i$ is the last coordinate of $P_i$. 
+We take the same set of eigentriples $I$ that we picked during the eigentriple grouping. Let $P_i, \; i \in I$ be the eigenvectors of the eigentriple group. We split them up in the following way: $\underline{P_i}$ is everything but the last coordinate of $P_i$ and $\pi_i$ is the last coordinate of $P_i$. 
 
 Define the vector $R = (a_{L-1}, \dots, a_1)^T$ like this:
 
@@ -150,4 +150,4 @@ The $\tilde{x}$ is the reconstructed time-series obtained in the diagonal averag
 
 There are two parameters when generating time series with SSA using this approach. The first is the window length L. It should be sufficiently large. The larger the window the more information there is to identify components. When trying to find seasonal components the window length should be divisible by the suspected seasonality. On the other hand the windows length should not be larger than $N/2$. $N$ being the length of the original time-series. This is since the size of the trajectory matrix is $L \times N-L+1$. If $L$ is to large the trajectory matrix has to few columns. 
 
-The other parameter is the number of eigentriples used in the reconstruction $K$. Picking a smaller $K$ will result in a smoothed reconstruction, while bigger $K$ while result in a reconstruction very close to the original time-series. By design the latter components only have a small contribution to the result, so overfitting by picking a to large $K$ is not really a concern. The upper bound for $K$ is the window length $L$. This is becaue the trajectory matrix has $L$ rows and therefore can not have more than $K$ eigenvectors. 
+The other parameter is the number of eigentriples used in the reconstruction $K$. Picking a smaller $K$ will result in a smoothed reconstruction, while bigger $K$ while result in a reconstruction very close to the original time-series. By design the latter components only have a small contribution to the result, so overfitting by picking a to large $K$ is not really a concern. The upper bound for $K$ is the window length $L$. This is because the trajectory matrix has $L$ rows and therefore can not have more than $K$ eigenvectors. 

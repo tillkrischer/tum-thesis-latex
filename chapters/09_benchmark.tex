@@ -12,7 +12,7 @@ Flink is a cluster computing platform. One Flink cluster consists of multiple pa
 
 \section{Flink Job: Pi Estimation}
 
-The idea is to benchmark Flink by submitting batch jobs to it according to our time series. For this we need a job that is sufficiently resource intensify to be noticable. A good candidate comes from the Flink batch processing examples: a pi estimation job. Flink jobs are written in Java and the code for this job can be found at (Reference). 
+The idea is to benchmark Flink by submitting batch jobs to it according to our time series. For this we need a job that is sufficiently resource intensify to be noticeable. A good candidate comes from the Flink batch processing examples: a pi estimation job. Flink jobs are written in Java and the code for this job can be found at (Reference). 
 
 The idea is tho pick random points by drawing x and y such that $0 < x, y < 1$. Then we check wether or not these points are in the unit circle with $x^2 + y^2 < 1$. We know that the area of the first quadrant segment of the unit circle is $\frac{\pi}{4}$ while the area of the square that the points all fall into is 1. From this we know that the fraction of the samples that fall in the unit-circle times 4 will approximate $\pi$.
 
@@ -20,7 +20,7 @@ The number of samples to consider can be specified via a parameter. The more sam
 
 \section{Benchmarking}
 
-From the time-series generation tool we receive a set of discrete time points each with a value. This is not great this real world tasks do not only come in at whole seconds. We address this with by considering normal distributions each with its mean at one of the time points. We draw from these normal distributions a number of times according to the value generated in the time series at that point. Figure \ref{fig:normal-dists} visualizes these normal distribtions.
+From the time-series generation tool we receive a set of discrete time points each with a value. This is not great this real world tasks do not only come in at whole seconds. We address this with by considering normal distributions each with its mean at one of the time points. We draw from these normal distributions a number of times according to the value generated in the time series at that point. Figure \ref{fig:normal-dists} visualizes these normal distributions.
 
 \begin{figure}
    \centering
@@ -29,19 +29,19 @@ From the time-series generation tool we receive a set of discrete time points ea
 \label{fig:normal-dists}
 \end{figure}
 
-At this point we have a sequence of absolute time points. For the benchmarking now we simply start a timer and whenever we hit one of these time points we submit a job. The script performing the benchmark hoes one step further. Since we can specify the amount of compute a job takes with a paramter we can simulate different kinds of jobs. The current scripts considers two generated time-series: one modeling one easy and one expensive job. 
+At this point we have a sequence of absolute time points. For the benchmarking now we simply start a timer and whenever we hit one of these time points we submit a job. The script performing the benchmark hoes one step further. Since we can specify the amount of compute a job takes with a parameter we can simulate different kinds of jobs. The current scripts considers two generated time-series: one modeling one easy and one expensive job. 
 
-While submittig jobs according to the schedule at each full second we pull metrics from both the Flink Task Manager and the Job Manager. Using this we can monitor how Flink handles the simulated work load.
+While submitting jobs according to the schedule at each full second we pull metrics from both the Flink Task Manager and the Job Manager. Using this we can monitor how Flink handles the simulated work load.
 
 \section{Flink API}
 
-There are multiple ways to inferface with Flink. The most convient for this kind of application is the REST API. 
+There are multiple ways to interface with Flink. The most convenient for this kind of application is the REST API. 
 
-The first relevant endpoint is "/jars". Jobs in Flink are Java programs and therefore distribted as jars. First we build the pi estimation code into such a jar. Then Flink needs to know about this job. This can be achived by submitting the jar file via a POST request to the endpoint "/jars/upload". The jar is that assigned an id, which is contained in the response of the upload request. All of this only has to happend once. 
+The first relevant endpoint is "/jars". Jobs in Flink are Java programs and therefore distributed as jars. First we build the pi estimation code into such a jar. Then Flink needs to know about this job. This can be achieved by submitting the jar file via a POST request to the endpoint "/jars/upload". The jar is that assigned an id, which is contained in the response of the upload request. All of this only has to happened once. 
 
-To run a submitted job we can submit a POST request to "/jars/:jarid/run". The jarid being the id received at upload. Using the query parameter "programArgs" we can sumbit arguments to the job. In the Pi estimation case the number of samples. 
+To run a submitted job we can submit a POST request to "/jars/:jarid/run". The jarid being the id received at upload. Using the query parameter "programArgs" we can submit arguments to the job. In the Pi estimation case the number of samples. 
 
-Because of Flinks architecture there are two places that we are interested in collecting mertics from: the Job Manger and the Task Manager. The respective endpoints for this are "/jobmanager/metrics" and "taskmanagers/metrics". The two endpoints behave exactly the same. Making a GET request without a query parameter returns a list of available metrics. To receive their values append the ids of the desired metrics via the "get" query parameter. This will return the metric values in a JSON format. (Flink Rest API doc reference)
+Because of Flink's architecture there are two places that we are interested in collecting metrics from: the Job Manger and the Task Manager. The respective endpoints for this are "/jobmanager/metrics" and "taskmanagers/metrics". The two endpoints behave exactly the same. Making a GET request without a query parameter returns a list of available metrics. To receive their values append the ids of the desired metrics via the "get" query parameter. This will return the metric values in a JSON format. (Flink Rest API doc reference)
 
 \section{Results}
 
@@ -75,8 +75,8 @@ Because of Flinks architecture there are two places that we are interested in co
 \label{fig:bench-threads}
 \end{figure}
 
-Figure \ref{fig:bench-cpu} through \ref{fig:bench-threads} show graphs of some of the metrics overlayed with the time series that generated them. Note that in this case there is only one time-series that is scheduling jobs of one kind. The graphs quickly become unreadable when adding more time series. 
+Figure \ref{fig:bench-cpu} through \ref{fig:bench-threads} show graphs of some of the metrics overlaid with the time series that generated them. Note that in this case there is only one time-series that is scheduling jobs of one kind. The graphs quickly become unreadable when adding more time series. 
 
 All of these were generated on Windows 10 using the Docker version of Flink. (Flink docker reference)
 
-The result are what we expcect: the mertics for CPU, Memory, and Threads are related to the generated time-series. When many jobs get submitted they go up as well. "taskSlotsAvailable" on the other hand has an inverse relationship. This also makes sense: as many jobs are being worked on the task slots are full. 
+The result are what we expect: the metrics for CPU, Memory, and Threads are related to the generated time-series. When many jobs get submitted they go up as well. "taskSlotsAvailable" on the other hand has an inverse relationship. This also makes sense: as many jobs are being worked on the task slots are full. 

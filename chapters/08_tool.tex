@@ -16,7 +16,7 @@ There are a lot of command line options available in this tool. We will first go
 
 "--time-increment": This affects the the values in the first "time" column of the output. By default the increment is 1, but it can be changed with this option. 
 
-"--scaling": For this option you specify two values: a new minimum and a new maximum. After generation of your choosen method is complete, this applies scaling so that the minimum and maximum values of the timeseries become the specified ones. 
+"--scaling": For this option you specify two values: a new minimum and a new maximum. After generation of your chosen method is complete, this applies scaling so that the minimum and maximum values of the time-series become the specified ones. 
 
 "--display": By default the time series is only output in CSV text form. If this option is enabled the tool will display a graph of the generated series as well. This is very helpful for visualization!
 
@@ -24,13 +24,13 @@ There are a lot of command line options available in this tool. We will first go
 
 The first available method is "hmm-learn". The idea is to specify training time series, from which the tool learns HMM parameters, that are then used to generate the time-series. This method comes with its own options. 
 
-"--hmm-training": This is a path to a CSV containing the training data. Each row is considered one indivudial time-series. 
+"--hmm-training": This is a path to a CSV containing the training data. Each row is considered one individual time-series. 
 
 "--hmm-components": This is the number of hidden states to use in the HMM. 
 
-"--hmm-iterations": This is the number iterations that the EM-algorith will be run. This number does not have to be huge since the algorithm usually converges quite quickly. 10 to 50 iterations are a good range. 
+"--hmm-iterations": This is the number iterations that the EM-algorithm will be run. This number does not have to be huge since the algorithm usually converges quite quickly. 10 to 50 iterations are a good range. 
 
-"--display": This will print the current iteration number and the current loglikelihood during every iteration. This can be helpful since depending on the setup the learning step can take quite a while. Also by looking at the loglikelihood you can get a sense of the convergence. 
+"--display": This will print the current iteration number and the current log-likelihood during every iteration. This can be helpful since depending on the setup the learning step can take quite a while. Also by looking at the log-likelihood you can get a sense of the convergence. 
 
 \begin{figure}
 \begin{singlespace}
@@ -58,17 +58,17 @@ def generate_hmm(startprop, transmat, means, cov, l):
 \label{fig:hmm-generate}
 \end{figure}
 
-We have looked at the implementtation of the parameter learning using the Baum-Welch algorithm in detail. However we have not looked at the actual time-series generation code. The implementation from the tool is listed in Figure \ref{fig:hmm-generate}. 
+We have looked at the implementation of the parameter learning using the Baum-Welch algorithm in detail. However we have not looked at the actual time-series generation code. The implementation from the tool is listed in Figure \ref{fig:hmm-generate}. 
 
-The idea is to generate a hidden state sequence based on the start and transistion probabilities. For this "np.random.choice" from numpy is used, which allows drawing from a set with a given probability vector p. From the hidden states we obtain the corresponing means and varainces and draw the data points from a normal ditributino using "np.random.normal". 
+The idea is to generate a hidden state sequence based on the start and transition probabilities. For this "np.random.choice" from numpy is used, which allows drawing from a set with a given probability vector p. From the hidden states we obtain the corresponding means and variances and draw the data points from a normal distribution using "np.random.normal". 
 
 \section{hmm-param}
 
-This method works by specifying the HMM parameters manually instead of learning them from training data. This method offers the followig options: 
+This method works by specifying the HMM parameters manually instead of learning them from training data. This method offers the following options: 
 
-"--hmm-means": This is the means $\mu$ parameter in a semi-continous HMM. 
+"--hmm-means": This is the means $\mu$ parameter in a semi-continuos HMM. 
 
-"--hmm-cov": This is the variance $\sigma$ parameter in a semi-continous HMM. 
+"--hmm-cov": This is the variance $\sigma$ parameter in a semi-continuos HMM. 
 
 "--hmm-start-prop": This is the start probability parameter $\pi$ in a HMM. 
 
@@ -78,11 +78,11 @@ Note that the dimensions of these parameters have to match up. "means", "cov", a
 
 \section{hmm-simple-param}
 
-This tool already requires a lot of commanline options to be specified. However in the "hmm-param" method this becomes unreasonable. This is why the "hmm-simple-param" method exists, where you only have to specify the means: 
+This tool already requires a lot of commandline options to be specified. However in the "hmm-param" method this becomes unreasonable. This is why the "hmm-simple-param" method exists, where you only have to specify the means: 
 
-"--hmm-means": This is the means $\mu$ parameter in a semi-continous HMM. 
+"--hmm-means": This is the means $\mu$ parameter in a semi-continuos HMM. 
 
-For the rest of the parameters the tool will pick for you. The variance will be 20\% of the covariance of the means vector for every state. The start probabilities will be evenly distributed. The transition probabilites are also evenly ditributed, but with a bias towards staying in the same state. 
+For the rest of the parameters the tool will pick for you. The variance will be 20\% of the covariance of the means vector for every state. The start probabilities will be evenly distributed. The transition probabilities are also evenly distributed, but with a bias towards staying in the same state. 
 
 As an example consider that the following means vector was given: 
 
@@ -90,7 +90,7 @@ As an example consider that the following means vector was given:
     \mu = (10, 30, 40, 70)^T
 \end{equation}
 
-Then the remaining parameters will be choosen in this way:
+Then the remaining parameters will be chosen in this way:
 
 \begin{equation}
     \begin{split}
@@ -120,11 +120,11 @@ The last method of generating is using Singular Spectrum Analysis forecasting. T
 
 Figure \ref{fig:hmm-learn-example} shows an example of the usage of the hmm-learn method. The specified training data is a time-series of daily page views of Wikipedia in 2019. (Reference)
 
-Figure \ref{fig:hmm-param-simple-example} show and exmple of the usage of the hmm-param-simple method. It uses the previously discussed exmple $\mu = (10, 30, 40, 70)^T$. 
+Figure \ref{fig:hmm-param-simple-example} show and example of the usage of the hmm-param-simple method. It uses the previously discussed example $\mu = (10, 30, 40, 70)^T$. 
 
 Figure \ref{fig:hmm-param-example} is the exact same parameters as Figure \ref{fig:hmm-param-simple-example}, but with all the parameters spelled out manually using the hmm-param method. 
 
-Figure \ref{fig:ssa-example} is an example of the ssa method. The data is airplane passenger data per month in the US. This is an ideal time-series for SSA since there is a clear trend and seasonality. The orignal time series is 144 long, so the values past that are all forecasted.
+Figure \ref{fig:ssa-example} is an example of the ssa method. The data is airplane passenger data per month in the US. This is an ideal time-series for SSA since there is a clear trend and seasonality. The original time series is 144 long, so the values past that are all forecasted.
 
 \begin{figure}
 \begin{lstlisting}[language=bash]
