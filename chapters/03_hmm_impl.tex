@@ -350,7 +350,7 @@ Having completed the E-step the final operation of the Baum-Welch algorithm is t
 
 The function takes in the variables accumulated in the E-step: "sumgamma", \\ "xsumgamma", "xsumgammasquared", "start", and "trans" and it returns the new parameters of the HMM $\pi$, $a$, $\mu$, and $\sigma$ as "norm\_start", "norm\_trans", "means", and "cov". 
 
-The parameters start and trans are already the denominators of the new $\pi$ and $a$. Since these two are defined to add up to one, they just have to be normalized to obtain the new parameters. The remaining parameters are $\gamma$ summed up over its rows and the dot-products of $\gamma$ and $x$ and $\gamma$ and $x^2$. They come in computing the remaining two parameters. 
+The parameters start and trans are already the numerator of the new $\pi$ and $a$. Since these two are defined to add up to one, they just have to be normalized to obtain the new parameters. The remaining parameters are $\gamma$ summed up over its rows and the dot-products of $\gamma$ and $x$ and $\gamma$ and $x^2$. They come in computing the remaining two parameters. 
 
 $\mu$ representing the means of the semi-continuos HMM is is computed according to Equation \eqref{eq:mu-def}. It is the fraction of $x$ dot $\gamma$ over sum of $\gamma$. This makes intuitive sense: for each hidden state the mean is a weighed average of all the data-points with the weight being the likelihood of being in that state at that time point. 
 
