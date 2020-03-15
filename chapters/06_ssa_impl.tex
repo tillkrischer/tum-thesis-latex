@@ -30,17 +30,17 @@ def handle_ssa(orig, window, components, l):
 \label{fig:ssa-handle}
 \end{figure}
 
-The high level function handling the time-series generation with SSA is called \texttt{handle\_ssa} and is shown in Figure \ref{fig:ssa-handle}. The parameters are \texttt{orig}, the original time-series that is going to be forecasted, \texttt{windows}, the window length $L$, \texttt{components}, the number of components $K$, and \texttt{l}, the requested length of the time-series about to be generated. 
+The high-level function handling the time-series generation with SSA is called \texttt{handle\_ssa} and is shown in Figure \ref{fig:ssa-handle}. The parameters are \texttt{orig}, the original time-series that is going to be forecasted, \texttt{windows}, the window length $L$, \texttt{components}, the number of components $K$, and \texttt{l}, the requested length of the time-series about to be generated. 
 
-Since this is a high level function that gets called directly with the commandline arguments passed by the user, \texttt{orig} is actually a path to a file containing the original time-series. We obtain a numpy array of the time-series from \texttt{parseCSV}.
+Since this is a high-level function that gets called directly with the command-line arguments passed by the user, \texttt{orig} is a path to a file containing the original time-series. We obtain a numpy array of the time-series from \texttt{parseCSV}.
 
-The function then follows the steps outlined in the theory section above. First we compute the trajectory matrix, named \texttt{C} here, using the \texttt{embed} function. Then we decompose the trajectory matrix to obtain the different component matrices and the corresponding eigenvectors. 
+The function then follows the steps outlined in the theory section above. First, we compute the trajectory matrix, named \texttt{C} here, using the \texttt{embed} function. Then we decompose the trajectory matrix to obtain the different component matrices and the corresponding eigenvectors. 
 
-Next we obtain the reconstructed series \texttt{x\_tilde} from the components we get from the decomposition. Then the recurrence vector \texttt{R} is computed from the eigenvectors. 
+Next, we obtain the reconstructed series \texttt{x\_tilde} from the components we get from the decomposition. Then the recurrence vector \texttt{R} is computed from the eigenvectors. 
 
 The variable \texttt{additional\_samples} holds the number of steps we have to forecast to reach the requested time-series length for the generation. Since it is possible to request a shorter series than the original, this is floored at 0. 
 
-Finally, the forecast function returns the concatenation of the approximation of the original time series and the forecasted samples. At this point, if the requested length is shorter that the original series, \texttt{fc} will be longer than \texttt{l}. That is why it gets cut of at that point in the return statement.
+Finally, the forecast function returns the concatenation of the approximation of the original time series and the forecasted samples. At this point, if the requested length is shorter than the original series, \texttt{fc} will be longer than \texttt{l}. That is why it gets cut off at that point in the return statement.
 
 \newpage
 
@@ -90,9 +90,9 @@ def decompose(X):
 
 Figure \ref{fig:ssa-embed} shows the function \texttt{embed}. It computes the trajectory matrix of time-series \texttt{X} using a window length of \texttt{k}. The matrix will have size $k \times l-k+1$. With \texttt{l} being the length of X. 
 
-Figure \ref{fig:ssa-decompose} shows the \texttt{decompose} function, which decomposes the trajectory matrix into component matrices one per eigenvector.  We first obtain the rank of the matrix since the rank determines the number of eigenvectors a matrix has. Then we apply Singular Value Decomposition on the square of \texttt{X}. Only the first two result of the SVD are useful to us: the matrix \texttt{U}, whose columns are the eigenvectors, and \texttt{S}, which contains the eigenvalues. 
+Figure \ref{fig:ssa-decompose} shows the \texttt{decompose} function, which decomposes the trajectory matrix into component matrices one per eigenvector.  We first obtain the rank of the matrix since the rank determines the number of eigenvectors a matrix has. Then we apply Singular Value Decomposition on the square of \texttt{X}. Only the first two results of the SVD are useful to us: the matrix \texttt{U}, whose columns are the eigenvectors, and \texttt{S}, which contains the eigenvalues. 
 
-We than loop through all the eigenvectors. In each iteration we extract the eigenvector from the \texttt{U} matrix and compute \texttt{P} and \texttt{Q} according to their definitions. The component matrix \texttt{Xcomp} is the outer product of the vectors \texttt{P} and \texttt{Q}. 
+We then loop through all the eigenvectors. In each iteration, we extract the eigenvector from the \texttt{U} matrix and compute \texttt{P} and \texttt{Q} according to their definitions. The component matrix \texttt{Xcomp} is the outer product of the vectors \texttt{P} and \texttt{Q}. 
 
 Since we need the eigenvectors later for the computation of $R$, they get collected in an array and returned together with an array of component matrices. 
 
@@ -138,11 +138,11 @@ def reconstruct(Xcomp, ncomponents):
 \label{fig:ssa-reconstruct}
 \end{figure}
 
-Next up is the reconstruction step. Figure \ref{fig:ssa-reconstruct} shows the function implementing this. The parameters are \texttt{Xcomp}, the component matrices obtained above and \texttt{ncomponents}, the specified number of components to use. Then according to the parameter we sum up the first $n$ components to obtain the reconstructed matrix \texttt{Xfull}. To go from the matrix for back to time-series form the \texttt{diagonal\_avg} function is applied. 
+Next up is the reconstruction step. Figure \ref{fig:ssa-reconstruct} shows the function implementing this. The parameters are \texttt{Xcomp}, the component matrices obtained above and \texttt{ncomponents}, the specified number of components to use. Then according to the parameter we sum up the first $n$ components to obtain the reconstructed matrix \texttt{Xfull}. To go from the matrix form back to time-series form the \texttt{diagonal\_avg} function is applied. 
 
 Note that it is not necessary to do these operations in the order of first summing up the matrices then converting to a time-series. The other way of first converting all the components to time-series and then summing up those is equally correct. 
 
-Figure \ref{fig:ssa-diag-avg} shows the implementation of the diagonal averaging function. It is the inverse of the \texttt{embed} function. It takes a matrix $M$ of size $k \times l$ and turns it into a array of length $l+k-1$. This works by averaging the values of the anti-diagonals. 
+Figure \ref{fig:ssa-diag-avg} shows the implementation of the diagonal averaging function. It is the inverse of the \texttt{embed} function. It takes a matrix $M$ of size $k \times l$ and turns it into an array of length $l+k-1$. This works by averaging the values of the anti-diagonals. 
 
 \section{Forecasting}
 
@@ -174,15 +174,15 @@ def forecast(x_tilde, R, steps):
 \label{fig:ssa-forecast}
 \end{figure}
 
-The last step to implement is the forecasting. The two functions related to forecasting \texttt{compute\_R} and \texttt{forecast} are listed in Figure \ref{fig:ssa-forecast}. 
+The last step to implement is forecasting. The two functions related to forecasting \texttt{compute\_R} and \texttt{forecast} are listed in Figure \ref{fig:ssa-forecast}. 
 
 To forecast we need the recurrence vector $R$, which is calculated by the function \texttt{compute\_R}. The parameters are the eigenvectors and the chosen number of components \texttt{ncomponents}. The $R$ vector's length is one less than the length of the eigenvectors. 
 
 The definition of R in Equation \eqref{eq:r-def} contains two sums over the chosen grouping $I$. In our case that is always the eigenvectors 1 through $n$. The two sums get computed first and stored in \texttt{vsq} and \texttt{R}. The terms $\underline{P_i}$ and $\pi$ from the definition are expressed in code as \texttt{eig[:-1]} and \texttt{eig[-1]} respectively. 
 
-Having computed $R$ we can then do the forecast using function \texttt{forecast}. The arguments for this function are \texttt{x\_tilde}, the reconstructed series, \texttt{R}, the recurrence vector, and \texttt{steps}, the amount of steps to forecast. 
+Having computed $R$ we can then do the forecast using function \texttt{forecast}. The arguments for this function are \texttt{x\_tilde}, the reconstructed series, \texttt{R}, the recurrence vector, and \texttt{steps}, the number of steps to forecast. 
 
 
-\texttt{forecast} will return one array containing both the reconstructed time-series and the forecasted steps concatenated together. For this we first create a shallow copy of \texttt{x\_tilde} in \texttt{new\_series}. Then according to the number of additional steps required we append the forecasted values. Each new value is the dot product of $R^T$ and the current last $d$ entries in \texttt{new\_series}, where $d$ is the length of the $R$ vector. 
+The function \texttt{forecast} will return one array containing both the reconstructed time-series and the forecasted steps concatenated together. For this, we first create a shallow copy of \texttt{x\_tilde} in \texttt{new\_series}. Then according to the number of additional steps required we append the forecasted values. Each new value is the dot product of $R^T$ and the current last $d$ entries in \texttt{new\_series}, where $d$ is the length of the $R$ vector. 
 
-With this we have covered all the relevant code for time-series generation using SSA in the time series generation tool. 
+This covers all the relevant code for time-series generation using SSA in the time series generation tool. 

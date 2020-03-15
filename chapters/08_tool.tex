@@ -2,23 +2,23 @@
 % Add the above to each chapter to make compiling the PDF easier in some editors.
 \chapter{Time Series Generation Tool}\label{chapter:tool}
 
-We have looked in detail at two approaches of generating time series, first studying their theory, then implementing them in Python. The result of this is a command line tool for generating time series \parencite{tsgenerator}. This chapter will discuss its usage. 
+We have looked in detail at two approaches to generating time series, first studying their theory, then implementing them in Python. The result of this is a command-line tool for generating time series \parencite{tsgenerator}. This chapter will discuss its usage. 
 
 \section{General Options}
 
-There are a lot of command line options available in this tool. We will first go over the general ones. 
+There are a lot of command-line options available in this tool. We will first go over the general ones. 
 
 \texttt{---method}: On a high level there are four different modes of operation. Three are based on Hidden Markov Models and one on Singular Spectrum Analysis. They are called "hmm-learn", "hmm-param-simple", "hmm-param", and "ssa". This option selects which one of them to use. 
 
-\texttt{---length}: All methods are able to generate time-series of variable length. This option specifies how many samples should be generated. 
+\texttt{---length}: All methods can generate time-series of variable length. This option specifies how many samples should be generated. 
 
 \texttt{---output}: The tool will output the time-series in the CSV format. One column will be the time points and the second column will contain the generated values. Using this option you can specify a file to write this CSV data to. If none is specified the data will be printed to stdout. 
 
-\texttt{---time-increment}: This affects the the values in the first ``time'' column of the output. By default the increment is 1, but it can be changed with this option. 
+\texttt{---time-increment}: This affects the values in the first ``time'' column of the output. By default, the increment is 1, but it can be changed with this option. 
 
 \texttt{---scaling}: For this option you specify two values: a new minimum and a new maximum. After the generation is complete, this applies scaling so that the minimum and maximum values of the generated time-series become the specified ones. 
 
-\texttt{---display}: By default the time series is only output in CSV text form. If this option is enabled the tool will display a graph of the generated series as well. This is very helpful for visualization!
+\texttt{---display}: By default, the time series is only output in CSV text form. If this option is enabled the tool will display a graph of the generated series as well. This is very helpful for visualization!
 
 \section{Method: hmm-learn}
 
@@ -28,7 +28,7 @@ The first available method is \texttt{hmm-learn}. The idea is to specify trainin
 
 \texttt{---hmm-components}: This is the number of hidden states to use in the HMM. 
 
-\texttt{---hmm-iterations}: This is the number iterations that the EM-algorithm will be run. This number does not have to be huge since the algorithm usually converges quite quickly. A good range are 10 to 50 iterations.
+\texttt{---hmm-iterations}: This is the number iterations that the EM-algorithm will be run. This number does not have to be huge since the algorithm usually converges quite quickly. A good range is 10 to 50 iterations.
 
 \texttt{---display}: This will print the current iteration number and the current log-likelihood during every iteration. This can be helpful since depending on the setup the learning step can take quite a while. Moreover, by looking at the log-likelihood you can get a sense of the convergence. 
 
@@ -58,7 +58,7 @@ def generate_hmm(startprop, transmat, means, cov, l):
 \label{fig:hmm-generate}
 \end{figure}
 
-We have looked at the implementation of the parameter learning using the Baum-Welch algorithm in detail. However we have not looked at the actual time-series generation code. The implementation from the tool is listed in Figure \ref{fig:hmm-generate}. 
+We have looked at the implementation of the parameter learning using the Baum-Welch algorithm in detail. However, we have not looked at the actual time-series generation code. The implementation from the tool is listed in Figure \ref{fig:hmm-generate}. 
 
 The idea is to generate a hidden state sequence based on the start and transition probabilities. For this \texttt{np.random.choice} from numpy is used, which allows drawing from a set with a given probability vector $p$. From the hidden states we obtain the corresponding means and variances and draw the data points from a normal distribution using \texttt{np.random.normal}.
 
@@ -66,21 +66,21 @@ The idea is to generate a hidden state sequence based on the start and transitio
 
 This method works by specifying the HMM parameters manually instead of learning them from training data. This method offers the following options: 
 
-\texttt{---hmm-means}: This is the means $\mu$ parameter in a semi-continuos HMM. 
+\texttt{---hmm-means}: This is the means $\mu$ parameter in a semi-continuous HMM. 
 
-\texttt{---hmm-cov}: This is the variance $\sigma$ parameter in a semi-continuos HMM. 
+\texttt{---hmm-cov}: This is the variance $\sigma$ parameter in a semi-continuous HMM. 
 
-\texttt{---hmm-start-prop}: This is the start probability parameter $\pi$ in a HMM. 
+\texttt{---hmm-start-prop}: This is the start probability parameter $\pi$ in an HMM. 
 
-\texttt{---hmm-trans-prop}: This is the transition probability parameter $a$ in a HMM. 
+\texttt{---hmm-trans-prop}: This is the transition probability parameter $a$ in an HMM. 
 
 Note that the dimensions of these parameters have to match up. \texttt{hmm-means}, \texttt{hmm-cov}, and \texttt{hmm-start-prop} all need to have the same length $k$, while \texttt{hmm-trans-prop} needs to be the square of that: $k^2$. 
 
 \section{Method: hmm-simple-param}
 
-This tool already requires a lot of commandline options to be specified. However in the \texttt{hmm-param} method this becomes unreasonable. This is why the \texttt{hmm-simple-param} method exists, where you only have to specify the means: 
+This tool already requires a lot of command-line options to be specified. However, in the \texttt{hmm-param} method this becomes unreasonable. This is why the \texttt{hmm-simple-param} method exists, where you only have to specify the means: 
 
-\texttt{---hmm-means}: This is the means $\mu$ parameter in a semi-continuos HMM. 
+\texttt{---hmm-means}: This is the means $\mu$ parameter in a semi-continuous HMM. 
 
 The rest of the parameters the tool will pick automatically. The variance will be 20\% of the covariance of the means vector for every state. The start probabilities will be evenly distributed. The transition probabilities are also evenly distributed, but with a bias towards staying in the same state. 
 
@@ -108,13 +108,13 @@ The remaining parameters will be chosen in this way:
 
 \section{Method: ssa}
 
-The last method of generating is Singular Spectrum Analysis forecasting. This also offers some commandline options: 
+The last method of generating is Singular Spectrum Analysis forecasting. This also offers some command-line options: 
 
 \texttt{---ssa-original}: This points towards a CSV file with the time series that is to be forecasted. 
 
-\texttt{---ssa-window}: This is the window length for the SSA embedding. The window length should not be to small but also not larger than $N/2$, where $N$ is the length of the original series. Moreover, the windows length should be a multiple of any suspected seasonality.
+\texttt{---ssa-window}: This is the window length for the SSA embedding. The window length should not be too small but also not larger than $N/2$, where $N$ is the length of the original series. Moreover, the window length should be a multiple of any suspected seasonality.
 
-\texttt{---ssa-components}: This is the number of eigentriple components to use in the time-series approximation and in the recurrence forecasting. Smaller values will lead to a smoother approximation, while large ones make the approximation more accurate. 
+\texttt{---ssa-components}: This is the number of eigentriple components to use in the time-series approximation and the recurrence forecasting. Smaller values will lead to a smoother approximation, while large ones make the approximation more accurate. 
 
 \section{Examples}
 
@@ -160,7 +160,7 @@ Figure \ref{fig:hmm-param-simple-example} shows an example of the usage of the \
 \label{fig:hmm-param-example}
 \end{figure}
 
-Figure \ref{fig:hmm-param-example} uses the exact same parameters as Figure \ref{fig:hmm-param-simple-example}, but with all the parameters spelled out manually using the \texttt{hmm-param} method. 
+Figure \ref{fig:hmm-param-example} uses the same parameters as Figure \ref{fig:hmm-param-simple-example}, but with all the parameters spelled out manually using the \texttt{hmm-param} method. 
 
 \newpage
 
@@ -174,4 +174,4 @@ Figure \ref{fig:hmm-param-example} uses the exact same parameters as Figure \ref
 \label{fig:ssa-example}
 \end{figure}
 
-Figure \ref{fig:ssa-example} is an example of the ssa method. The data is airplane passenger data per month in the US. This is an ideal time-series for SSA since there is a clear trend and seasonality. The original time series is 144 long, so the values past that are all forecasted.
+Figure \ref{fig:ssa-example} is an example of the ssa method. The data is airplane passenger data per month in the US. This is an ideal time-series for SSA since there are clear trend and seasonality. The original time series is 144 long, so the values past that are all forecasted.

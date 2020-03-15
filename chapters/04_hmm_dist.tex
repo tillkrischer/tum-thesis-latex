@@ -3,19 +3,19 @@
 
 \chapter{Distributed Baum-Welch}\label{chapter:hmm-dist}
 
-Learning Hidden Markov Model parameters using the Baum-Welch algorithm can be resource intensive, especially if there is a large amount of training data. One approach to tackling such a problem is to do the computation in a distributed way. That is having multiple computers each work on part of the problem. In addition to the time series generation tool, this paper will also contain a distributed implementation of the Baum-Welch algorithm. 
+Learning Hidden Markov Model parameters using the Baum-Welch algorithm can be resource-intensive, especially if there is a large amount of training data. One approach to tackling such a problem is to do the computation in a distributed way. That is having multiple computers each work on part of the problem. In addition to the time series generation tool, this paper will also contain a distributed implementation of the Baum-Welch algorithm. 
 
 \section{Apache Spark}
 
-While not impossible, it would be very difficult to create a distributed program like this from scratch. Certainly it would not be feasible for a paper like this. This is where distributed computing frameworks come in that simplify this task. 
+While not impossible, it would be very difficult to create a distributed program like this from scratch. Certainly, it would not be feasible for a paper like this. This is where distributed computing frameworks come in that simplify this task. 
 
-In this paper the distributed computing framework of choice is Apache Spark. Spark is an open-source distributed general-purpose cluster-computing framework. There are many reasons to chose Spark, one being performance. Spark uses a state-of-the-art Directed Acyclic Graph(DAG) scheduler, query optimizer, and physical execution engine. Spark also offers in memory processing to avoid writing to disk. These technologies cause Spark to complete tasks up to 100 times faster that its alternatives, one of them being Hadoop \parencite{zaharia2016apache}.
+In this paper, the distributed computing framework of choice is Apache Spark. Spark is an open-source distributed general-purpose cluster-computing framework. There are many reasons to chose Spark, one being performance. Spark uses a state-of-the-art Directed Acyclic Graph(DAG) scheduler, query optimizer, and physical execution engine. Spark also offers in-memory processing to avoid writing to disk. These technologies cause Spark to complete tasks up to 100 times faster than its alternatives, one of them being Hadoop \parencite{zaharia2016apache}.
 
-Spark is also has general applicability. Using various libraries on top of Spark it can be used in various scenarios. For example Spark SQL for queries, MLib for machine learning applications, GraphX for Graph operations, and Spark Streaming for streaming instead of batch operations. 
+Spark also has general applicability. Using various libraries on top of Spark it can be used in various scenarios. For example Spark SQL for queries, MLib for machine learning applications, GraphX for Graph operations, and Spark Streaming for streaming instead of batch operations. 
 
 However, the most important reason to chose it for this project is Spark's ease of use. Spark has APIs in many languages like Java, Scala, Python, R, and SQL. Since we already have a python implementation, the Python API called pyspark is a great choice. In all these languages the API is high-level making it simple to create distributed computation code \parencite{pyspark}.
 
-The most important concept in Spark is Resilient Distributed Datasets (RDDs). They are fault tolerant collection of data which is operated on in parallel. There are two types of operations on RDDs: transformations and actions. Transformations create a new dataset from the original. An example of a transformation is \texttt{map}, which applies a function to every member of a dataset. The result of this is a new dataset. The other operation ``action'' returns a value after running over the dataset. An example for an action is \texttt{reduce}, which aggregates the elements of the dataset using a given  function and returns the result \parencite{rddguide}.
+The most important concept in Spark is Resilient Distributed Datasets (RDDs). They are fault-tolerant collection of data that is operated on in parallel. There are two types of operations on RDDs: transformations and actions. Transformations create a new dataset from the original. An example of a transformation is \texttt{map}, which applies a function to every member of a dataset. The result of this is a new dataset. The other operation ``action'' returns a value after running over the dataset. An example of an action is \texttt{reduce}, which aggregates the elements of the dataset using a given function and returns the result \parencite{rddguide}.
 
 \section{Baum-Welch}
 \label{section:distributed-hmm}
@@ -27,11 +27,11 @@ The most important concept in Spark is Resilient Distributed Datasets (RDDs). Th
   \label{fig:distributed}
 \end{figure}
 
-Having chosen the appropriate framework for facilitating the distributed computing, now the question is how to split up the work load of the Baum-Welch algorithm so that we actually have work to distribute. 
+Having chosen the appropriate framework for facilitating the distributed computing, now the question is how to split up the workload of the Baum-Welch algorithm so that we have work to distribute. 
 
-The opportunity for parallelization comes during the E-step, when dealing with multiple training time-series. For each of them we execute the forward and backward algorithm and compute the intermediate values $\gamma$ and $\xi$. After these are computed for every time-series the intermediate variables get summed up and serve as the basis for the new parameters computed in the M-step.
+The opportunity for parallelization comes during the E-step when dealing with multiple training time-series. For each of them, we execute the forward and backward algorithm and compute the intermediate values $\gamma$ and $\xi$. After these are computed for every time-series the intermediate variables get summed up and serve as the basis for the new parameters computed in the M-step.
 
-The distributed computation is visualized in Figure \ref{fig:distributed}. During each iteration the master sends a worker a time-series together with the current parameters $\phi$. The workers execute the E-step and returns $\gamma$ and $\xi$ to the master, who executes the M-step, once all the results from the workers are in. Note that when programming in pyspark we do not have to worry about masters and workers. The pyspark API abstracts all this away. We just have to think in terms of functional programming. This operation can be achieved using \texttt{map} and \texttt{reduce}. Still Figure \ref{fig:distributed} is helpful in visualizing the process. 
+The distributed computation is visualized in Figure \ref{fig:distributed}. During each iteration, the master sends a worker a time-series together with the current parameters $\phi$. The workers execute the E-step and returns $\gamma$ and $\xi$ to the master, who executes the M-step, once all the results from the workers are in. Note that when programming in pyspark we do not have to worry about masters and workers. The pyspark API abstracts all this away. We just have to think in terms of functional programming. This operation can be achieved using \texttt{map} and \texttt{reduce}. Still Figure \ref{fig:distributed} helps visualize the process. 
 
 \section{Spark Implementation}
 
@@ -73,15 +73,15 @@ def fit(X, components, iterations):
 \label{fig:pyspark-fit-listing}
 \end{figure}
 
-Figure \ref{fig:pyspark-fit-listing} shows the implementation of the \texttt{fit} function for the distributed Baum-Welch algorithm. The function signature is the same with the parameters \texttt{X}, \texttt{components}, and \texttt{iterations}. \texttt{X} is the training data, \texttt{components} is the number of hidden states and \texttt{iterations} is the number of iterations of the EM-algorithm. 
+Figure \ref{fig:pyspark-fit-listing} shows the implementation of the \texttt{fit} function for the distributed Baum-Welch algorithm. The function signature is the same: the parameters are \texttt{X}, \texttt{components}, and \texttt{iterations}. \texttt{X} is the training data, \texttt{components} is the number of hidden states and \texttt{iterations} is the number of iterations of the EM-algorithm. 
 
-First the parameters of the HMM get initialized in the same way as the regular code. Then the main loop follows applying the specified number of iterations. Then comes the E-step which is where the differences start. We set up an array of \texttt{dataobjs}, one for each time-series in the training data-set. The objects each contain a \texttt{''data''} entry which contains the time-series. Additionally, they also have entries for all the current parameters of the HMM. 
+First, the parameters of the HMM get initialized in the same way as the regular code. Then the main loop follows applying the specified number of iterations. Then comes the E-step which is where the differences start. We set up an array of \texttt{dataobjs}, one for each time-series in the training data-set. The objects each contain a \texttt{''data''} entry which contains the time-series. Additionally, they also have entries for all the current parameters of the HMM. 
 
-Now we set up the Resilient Distributed Dataset. An RDD can be created from any collection of data, in this case it is a python array. In line 16 using the Spark Context we call parallelize on the \texttt{dataobjs} array which turns it into an RDD. For the sake of example in this case it is split into two parts. 
+Now we set up the Resilient Distributed Dataset. An RDD can be created from any collection of data, in this case, it is a python array. In line 16 using the Spark Context, we call \texttt{parallelize} on the \texttt{dataobjs} array which turns it into an RDD. For the sake of example in this case it is split into two parts. 
 
 Having created the RDD next we want to apply the E-step on each of its entries. This happens through the RDD operation \texttt{map}. This causes the function \texttt{process} to be applied to every RDD entry creating a new RDD \texttt{processed} containing the results. 
 
-Next, we have to sum up the intermediate values to prepare for the M-step. This is achieved by the RDD operation \texttt{reduce}. This goes through the \texttt{processed} RDD and accumulates the intermediate values according to the function \texttt{sum\_interm\_values}. The call to \texttt{reduce} returns the \texttt{interm} obj from which we extract the intermediate values of the E-step. Since we are considering a semi-continuos HMM, there is not just $\gamma$ and $\xi$, but the same five intermediate values that we already observed in the E-step in the regular Baum-Welch implementation. 
+Next, we have to sum up the intermediate values to prepare for the M-step. This is achieved by the RDD operation \texttt{reduce}. This goes through the \texttt{processed} RDD and accumulates the intermediate values according to the function \texttt{sum\_interm\_values}. The call to \texttt{reduce} returns the \texttt{interm} obj from which we extract the intermediate values of the E-step. Since we are considering a semi-continuous HMM, there is not just $\gamma$ and $\xi$, but the same five intermediate values that we already observed in the E-step in the regular Baum-Welch implementation. 
 
 Finally, the M-step is executed through the function \texttt{update\_params} just as before. 
 
@@ -150,4 +150,4 @@ def process(dataobj):
 \label{fig:pyspark-process-listing}
 \end{figure}
 
-Figure \ref{fig:pyspark-process-listing} shows the \texttt{process} function. First it extracts its parameters from the single parameter object \texttt{dataobj}. Then it performs the regular E-step on its given time series by executing the forward and backward algorithm and then computing the necessary intermediate values. Then it assembles them in a \texttt{resultobj} and returns it. These result objects will be the entries of the new \texttt{processed} RDD.
+Figure \ref{fig:pyspark-process-listing} shows the \texttt{process} function. First, it extracts its parameters from the single parameter object \texttt{dataobj}. Then it performs the regular E-step on its given time series by executing the forward and backward algorithm and then computing the necessary intermediate values. Then it assembles them in a \texttt{resultobj} and returns it. These result objects will be the entries of the new \texttt{processed} RDD.
