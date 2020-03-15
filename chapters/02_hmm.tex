@@ -3,18 +3,18 @@
 
 \chapter{Hidden Markov Models}\label{chapter:hmm}
 
-One of the approaches to generate time series in this thesis are Hidden Markov Models (HMM). HMMs are a powerful tool to model observed data samples of a discrete time series. They are a generative model which makes them inherently suitable for the task of generating data. It is a flexible approach: the observed data of the time series can be continuous or discretely distributed and the samples can be scalars or vectors. 
+One of the approaches to generate time series in this thesis are Hidden Markov Models (HMM). HMMs are a powerful tool to model observed data samples of a discrete time series. They are a generative model which makes them inherently suitable for the task of generating data. It is a flexible approach: the observed data of the time series can be continuously or discretely distributed and the samples can be scalars or vectors. 
 
-The theory of Hidden Markov Models was originally developed by Baum. \parencite{baum1972inequality} HMMs have a variety of applications. They are especially useful in speech and language related tasks. They have been used in applications such as speech recognition, speech tagging, and machine translation.\parencite{huang2001spoken} 
+The theory of Hidden Markov Models was originally developed by Baum \parencite{baum1972inequality}. HMMs have a variety of applications. They are especially useful in speech and language related tasks. They have been used in applications such as speech recognition, speech tagging, and machine translation\parencite{huang2001spoken}.
 
 \section{Markov Chain}
-To understand Hidden Markov models you first have to understand the regular \emph{Markov Chain}. Let $\mathbf{X}=X_{1}, X_{2}, \ldots X_{n}$ be a sequence of random variables. The probability of the sequence is $P\left(X_{1}, X_{2}, \ldots, X_{n}\right)$ and using Bayes rule we get: 
+To understand Hidden Markov models we first have to understand the regular \emph{Markov Chain}. Let $\mathbf{X}=X_{1}, X_{2}, \ldots X_{n}$ be a sequence of random variables. The probability of the sequence is $P\left(X_{1}, X_{2}, \ldots, X_{n}\right)$ and using Bayes rule get: 
 
 \begin{equation}
 P\left(X_{1}, X_{2}, \ldots, X_{n}\right)=P\left(X_{1}\right) \prod_{i=2}^{n} P\left(X_{i} |X_{1}, X_{2}, \ldots, X_{i-1}\right)
 \end{equation}
 
-This shows that the probability of variable $X_1$ is dependent on only itself. $X_2$ is conditioned on $X_1$, $X_3$ on $X_1$ and $X_2$ and so on. To be a Markov Chain a sequence has to satisfy the Markov property, which states that the probability of a variable can only depend on its predecessor. Formally this means: 
+This shows that the probability of variable $X_1$ is dependent on only itself. $X_2$ is conditioned on $X_1$, $X_3$ is conditioned on $X_1$ and $X_2$ and so on. To be a Markov Chain a sequence has to satisfy the Markov property, which states that the probability of a variable can only depend on its predecessor. Formally this means: 
 
 \begin{equation}
 P\left(X_{i} | X_{1}, X_{2}, \ldots, X_{i-1}\right)=P\left(X_{i} | X_{i-1}\right)
@@ -26,7 +26,7 @@ And turns the previous equation to :
 P\left(X_{1}, X_{2}, \ldots, X_{n}\right)=P\left(X_{1}\right) \prod_{i=2}^{n} P\left(X_{i} | X_{i-1}\right)
 \end{equation}
 
-A Markov Chain can be represented as a finite state machine. Each random variable $X_i$ corresponds to a state $s$ in the Markov chain. Every state transition has a probability $P(s | s')$ and because of the Markov property a state only depends on its predecessor state. With this representation a Markov Chain can be parametrized like this like this:
+A Markov Chain can be represented as a finite state machine. Each random variable $X_i$ corresponds to a state $s$ in the Markov chain. Every state transition has a probability $P(s | s')$ and because of the Markov property a state only depends on its predecessor state. With this representation a Markov Chain can be parametrized like this:
 
 \begin{equation}
 \begin{aligned}
@@ -37,7 +37,7 @@ A Markov Chain can be represented as a finite state machine. Each random variabl
 \end{aligned}
 \end{equation}
 
-Here $a_{ij}$ is the probability of the state transition form state $i$ to $j$. Additionally there the start probabilities: $\pi_i$ represents the probability of starting in state $i$. $a$ is a matrix (the transition matrix) and $\pi$ is a vector. Since they represent probabilities we need the additional constraints expressed by equation 3 and 4. The rows of transition matrix $a$ and the start vector $\pi$ have to add up to 1. \parencite{huang2001spoken}
+Here $a_{ij}$ is the probability of the state transition form state $i$ to $j$. Additionally there the start probabilities $\pi_i$, which represent the probability of starting in state $i$. The parameter $a$ is a matrix (the transition matrix) and $\pi$ is a vector. Since they represent probabilities we need the additional constraints expressed by equation 3 and 4. The rows of transition matrix $a$ and the start vector $\pi$ have to add up to 1 \parencite{huang2001spoken}.
 
 \begin{figure}
     \centering
@@ -52,11 +52,11 @@ $$\mathrm{P}\left(X_{1: T}=x_{1: T}\right)=\mathrm{P}\left(X_{1}=s\right) \times
 \label{fig:markov-chain-example}
 \end{figure}
 
-Figure \ref{fig:markov-chain-example} is an example of the Finite State Machine representation of a Markov Chain. It models weather: there are 3 states of weather: rainy, sunny, and cloudy. The weather of a given day only depends on the previous day. A sequence of the weather of 7 days is given, it can be thought of as a random walk in the Finite State Machine and its probability can be calculated accordingly using the transition matrix and the start probabilities. \parencite{miningmassivedatasets}
+Figure \ref{fig:markov-chain-example} is an example of the Finite State Machine representation of a Markov Chain, which models weather. There are  three states of weather: rainy, sunny, and cloudy. The weather of a given day only depends on the previous day. A sequence of the weather for 7 days is given, which can be thought of as a random walk in the Finite State Machine.  Its probability can be calculated accordingly using the transition matrix and the start probabilities \parencite{miningmassivedatasets}.
 
 \section{Hidden Markov Model}
 
-In the regular Markov chain each state is directly observable. In many applications this is not the case: There can be a non-deterministic process determining the output for each state. We get observations for each time point, but we do not know the state. It is \emph{hidden}. 
+In the regular Markov chain each state is directly observable. In many applications this is not the case: there can be a non-deterministic process determining the output for each state. We get observations for each time point, but we do not know the state. It is \emph{hidden}. 
 
 We get a two layered probabilistic model. The hidden states are modeled by a regular Markov chain. Then each state has a probabilistic function that generates the observed output. 
 
@@ -67,7 +67,7 @@ We get a two layered probabilistic model. The hidden states are modeled by a reg
 \label{fig:hmm}
 \end{figure}
 
-
+\newpage
 To represent this extension of the Markov chain we have to add an additional variable to the parameterization: 
 
 \begin{equation}
@@ -88,17 +88,18 @@ The three parameters together are referred to as $\Phi$.
 \Phi=(\mathbf{A}, \mathbf{B}, \boldsymbol{\pi})
 \end{equation}
 
-$b_{i}(k)$ is called emission probability. It represents the probability of generating output $o_k$ from state $i$. Again since it is a probability it is constraint: The probabilities of the different outputs of a state have to add up to 1. This is a general formulation of $b$. How it looks in practice depends on the probability distribution for the outputs chosen for the model. In case of discrete outputs it is a categorical distribution, which would lead to $b$ being a matrix. One the other hand when modeling continuous outputs the distribution of choice is the normal distribution. In that case $b$ is a set of means and variances. This paper will look at the continuous case in detail. 
+The parameter $b_{i}(k)$ is called emission probability. It represents the probability of generating output $o_k$ from state $i$. Again, since it is a probability it is constrained: The probabilities of the different outputs of a state have to add up to 1. The specific format of $b$ depends on the chosen probability distribution for the outputs of model. 
+The current formulation assumes discrete outputs, which is represented by a categorical distribution and would lead to $b$ being a matrix. One the other hand, when modeling continuous outputs the distribution of choice is the normal distribution. In that case $b$ is a set of means and variances. This paper will focus the continuous case.
 
-On top of the Markov Property in Hidden Markov models have to fulfill a second property: The \emph{output-independence assumption}:
+On top of the Markov Property Hidden Markov Models have to fulfill a second property: The \emph{output-independence assumption}:
 
 \begin{equation}
 P\left(X_{t} |X_{1}, X_{2}, \ldots, X_{t-1}, s_{1}^{t}\right)=P\left(X_{t} | s_{t}\right)
 \end{equation}
 
-This property assures that each output only depends on its corresponding state. It is independent of all other outputs. \parencite{huang2001spoken}
+This property assures that each output only depends on its corresponding state. It is independent of all other outputs \parencite{huang2001spoken}.
 
-So how can we use Hidden Markov Models to generate time series? Since HMMs are a generative model it is easy: Specify the three parameters $A, B, \pi$ and according to the model. Then generate a series of hidden states using the start and transition probabilities. Finally generate the data points according to the emission probabilities. But there is another way: we can learn the parameters from an existing time series. Using those we can then generate a new time-series with similar properties to the training time-series. The learning problem can be solved using the \emph{Forward/Backward algorithm} and the \emph{Baum-Welch algorithm}.
+How can we use Hidden Markov Models to generate time series? Since HMMs are a generative model it is easy: specify the three parameters $A, B, \pi$ according to the model. Then generate a series of hidden states using the start and transition probabilities. Finally generate the data points according to the emission probabilities. But there is another way: we can learn the parameters from an existing time series. Using those we can then generate a new time-series with similar properties to the training time-series. The learning problem can be solved using the \emph{Forward/Backward algorithm} and the \emph{Baum-Welch algorithm}.
 
 \section{Forward Algorithm}
 
@@ -116,7 +117,7 @@ In terms of $A$, $B$, and $\pi$ this becomes:
    P(\mathbf{X} | \Phi)=\sum_{\text {all } \mathbf{S}} \pi_{s_{1}} b_{s_{1}}\left(X_{1}\right) a_{s_{1} s_{2}} b_{s_{2}}\left(X_{2}\right) \ldots a_{s_{T-1} s_{T}} b_{s_{T}}\left(X_{T}\right) 
 \end{equation}
 
-The issue here is that there are exponentially many, $O(N^{T})$, state sequences to consider. But there is a more efficient way to compute this that involves storing intermediate results, which saves computation. 
+The underlying issue here is that there are exponentially many, $O(N^{T})$, state sequences to consider. However, there is a more efficient way to compute this that involves storing intermediate results, which saves computation. 
 
 Define forward probability $\alpha$:
 
@@ -124,7 +125,7 @@ Define forward probability $\alpha$:
    \alpha_{t}(i)=P\left(X_{1:t}, s_{t}=i | \Phi\right) 
 \end{equation}
 
-$X_{1:t}$ represents the Observations from time 1 up to time $t$. So $\alpha_{t}(i)$ is the probability that given the parameters $\Phi$ we observe the first $t$ values and are in state $i$ at time $t$.
+The term $X_{1:t}$ represents the observations from time 1 up to time $t$. So $\alpha_{t}(i)$ is the probability that given the parameters $\Phi$ we observe the first $t$ values and are in state $i$ at time $t$.
 
 The convenient thing about $\alpha$ is that it can be recursively defined:
 
@@ -136,15 +137,14 @@ The convenient thing about $\alpha$ is that it can be recursively defined:
 \label{eq:alpha-def}
 \end{equation}
 
-
-Finally to compute the probability of $X$ start $\alpha_1$ and going up to $\alpha_T$. The probability of the sequence $X$ is:
+Finally, we compute the probability of $X$ by starting at $\alpha_1$ and going up to $\alpha_T$. The probability of the sequence $X$ is:
 
 \begin{equation}
    P(\mathbf{X} | \Phi)=\sum_{i=1}^{N} \alpha_{T}(i) 
   \label{eq:prop-statement}
 \end{equation}
 
-By reusing the intermediate values we save computation and the runtime becomes $O(N^2 T)$. \parencite{huang2001spoken}
+By reusing the intermediate values we save computation and the runtime becomes $O(N^2 T)$ \parencite{huang2001spoken}. 
 
 \section{Backwards Algorithm}
 
@@ -154,7 +154,7 @@ Analogous to the Forward Algorithm there is also the Backwards Algorithm. It is 
    \beta_{t}(i)=P\left(X_{t+1:T} | s_{t}=i, \Phi\right) 
 \end{equation}
 
-$X_{t+1:T}$ refers to the observations from $t+1$ to the end of the sequence. Because of this $\beta$ is evaluated the other way around, giving the algorithm its name. The recursive definition of $\beta$ is this:
+The term $X_{t+1:T}$ refers to the observations from $t+1$ to the end of the sequence. Because of this $\beta$ is evaluated the other way around, giving the algorithm its name. The recursive definition of $\beta$ is this:
 
 \begin{equation}
 \begin{aligned}
@@ -164,7 +164,7 @@ $X_{t+1:T}$ refers to the observations from $t+1$ to the end of the sequence. Be
 \end{aligned}
 \end{equation}
 
-In the base case, which is the last row of $\beta$, since there are no observations following this one, the probability is 0. \parencite{huang2001spoken}
+The base case is the last row of $\beta$. Since there are no observations following this one, it is the probability of the empty set, which is 0 \parencite{huang2001spoken}.
 
 Why we need both the Forward and Backwards algorithm will become clear when looking at the \emph{Baum-Welch algorithm}.
 
@@ -172,7 +172,9 @@ Why we need both the Forward and Backwards algorithm will become clear when look
 
 The Baum Welch algorithm is a so called EM-algorithm. Its goal is the same as in Maximum Likelihood Estimation (MLE). We are trying to find parameters that maximize a probability distribution. The difference is that a EM-algorithm also works with incomplete observed data. In the case of Hidden Markov Models this are the hidden states. 
 
-An EM algorithm deals with the issue of missing data in this way: We do Maximum Likelihood Estimation using expected instead of actual data. For the first step we guess the parameters and use these to compute the expectation of the missing data. With the now complete data we perform Maximum Likelihood Estimation to obtain new parameters. Then repeat using the new parameters. This is where the name EM algorithm comes from: E for Expectation and M for Maximization. Each iteration of the EM algorithm will improve the accuracy of the parameters and they will eventually converge. However there is no guarantee to find the global maximum this way: We might run into a local maximum. This issue can be avoided somewhat by picking good values for the initial guess of parameters. 
+An EM algorithm deals with the issue of missing data in this way: We do MLE using expected instead of actual data. The initial parameters are guessed. Then during each iteration we use the current parameters to compute the expectation of the missing data. With the now complete data we perform MLE to obtain new parameters. This is where the name EM algorithm comes from: E for Expectation and M for Maximization. 
+ 
+Each iteration of the EM algorithm will improve the accuracy of the parameters and they will eventually converge. However, there is no guarantee to find the global maximum this way. We might run into a local maximum. This issue can be avoided by picking good values for the initial guess of parameters. The implementation section will discuss the approach for this.
 
 \section{Parameter Learning - Fully observed}
 
@@ -212,24 +214,24 @@ Since each part of the sum only has one parameter in it they can be maximized in
   \label{eq:lp-statement}
 \end{equation}
 
-The constraint of summing up to one comes from the definition of the HMM parameters in Equation \eqref{eq:hmm-def}. This is a linear programming problem, which can be solved for example using Lagrange Multipliers \parencite{huang2001spoken}. The maximum will be achieved when: 
+The constraint of summing up to one comes from the definition of the HMM parameters in Equation \eqref{eq:hmm-def}. This is a linear programming problem, which can be solved, for example, using Lagrange Multipliers \parencite{huang2001spoken}. The maximum will be achieved when: 
 
 \begin{equation}
   x_{i}=\frac{y_{i}}{\sum_{i} y_{i}} 
   \label{eq:lp-solution}
 \end{equation}
 
-Finally we get these values for the three parameters: 
+Finally, we get these values for the three parameters: 
 
 \begin{equation}
   \hat{a}_{i j}=\frac{N(i, j)}{\sum_{s} N(i, s)} \quad \hat{b}_{i}(j)=\frac{M(i, j)}{\sum_{s} M(i, s)} \quad \hat{\pi}_{k}=\frac{L(k)}{\sum_{s} L(s)} 
 \end{equation}
 
-This makes sense intuitively: For $\pi$ the start probability of state $k$ will be the fraction of observed sequences starting in $k$ over total observed sequences. Similarly the transition probability form state $i$ to $j$ is the number of observed transitions like that over total observed transitions.  \parencite{miningmassivedatasets}
+This makes sense intuitively: For $\pi$ the start probability of state $k$ will be the fraction of observed sequences starting in $k$ over total observed sequences. Similarly, the transition probability form state $i$ to state $j$ is the number of observed ``$i$ to $j$'' transitions over total observed transitions \parencite{miningmassivedatasets}. 
 
 \section{Baum-Welch - E-step}
 
-The previous computations assumed we observed the hidden states. This is not the case in the Baum-Welch algorithm and we have to apply the EM approach. First we  reformulate the probability in terms of the expectation of the hidden states $P\left(s_{1: T} | X_{1: T}, \theta_{\text {old}}\right)$, which looks like this:
+The previous computations assumed we observed the hidden states. This is not the case in the Baum-Welch algorithm and we have to apply the EM approach. For this we reformulate the probability in terms of the expectation of the hidden states $P\left(s_{1: T} | X_{1: T}, \theta_{\text {old}}\right)$, which looks like this:
 
 \begin{equation}
 \begin{split}
@@ -250,15 +252,17 @@ First we have to compute the expectations: the E-step of the EM-algorithm. Defin
 \end{aligned} 
 \end{equation}
 
-$\gamma_t(i)$ represents the probability to be in state $i$ after $t$ time steps given the observation and old parameters. We already have all the pieces in place to compute this. From the forward algorithm we get $\alpha_t(i)$, which is the probability to be in state $i$ at $t$ given the observations up to that point. We also have $\beta_t(i)$, which gives the same but for the observations following point $t$.
+The variable $\gamma_t(i)$ represents the probability to be in state $i$ after $t$ time steps given the observation and old parameters. We already have all the pieces in place to compute this.
+
+From the forward and backward algorithm we get $\alpha_t(i)$ and $\beta_t(i)$, which represent the probability to be in state $i$ at $t$. The condition for $\alpha$ is the observations up to point $t$ and for $\beta$ the observations following point $t$.
 
 \begin{equation}
    \gamma_t(i) = \frac{\alpha_{t}(i) \beta_{t}(i)}{\sum_{s} \alpha_{t}(s) \beta_{t}(s)}
 \end{equation}
 
-Multiplying $\alpha$ and $\beta$ together gives the desired probabilities. We then have to normalize to get $\gamma$. 
+Multiplying $\alpha$ and $\beta$ together results in the desired probabilities. We then have to normalize to get $\gamma$. 
 
-$\xi$ can also be computed using $\alpha$ and $\beta$. 
+The variable $\xi$ can also be computed using $\alpha$ and $\beta$. 
 
 \begin{equation}
    \xi_{t}(i, j)=\frac{\mathrm{P}\left(s_{t}=i, s_{t+1}=j, X_{1: T}\right)}{\mathrm{P}\left(X_{1: T}\right)} \propto \mathrm{P}\left(s_{t}=i, s_{t+1}=j, X_{1: T}\right)
@@ -290,7 +294,7 @@ Then we remove unnecessary conditions in the conditional probabilities.
 \end{aligned} 
 \end{equation}
 
-At this point we either normalize or we can compute the original denominator $P(X_{1:T})$ directly using $\alpha$.
+At this point we either normalize or compute the original denominator $P(X_{1:T})$ directly using $\alpha$.
 
 \begin{equation}
 \begin{aligned}
@@ -300,7 +304,7 @@ At this point we either normalize or we can compute the original denominator $P(
 \end{aligned}
 \end{equation}
 
-Having computed $\xi$ and $\gamma$ we have reformulated the probability distribution in terms of expectations, which completes the E-step. We first run the forward and backwards algorithm to obtain $\alpha$ and $\beta$. They each take $O(TK^2)$. Then we compute $\gamma$ and $\xi$, which take $O(TK)$ and $O(TK^2)$ respectively. So the overall runtime of the E-step is $O(TK^2)$. \parencite{miningmassivedatasets}
+Having computed $\xi$ and $\gamma$ we have reformulated the probability distribution in terms of expectations, which completes the E-step. We first run the forward and backwards algorithm to obtain $\alpha$ and $\beta$. They each take $O(TK^2)$. Then we compute $\gamma$ and $\xi$, which take $O(TK)$ and $O(TK^2)$ respectively. So the overall runtime of the E-step is $O(TK^2)$ \parencite{miningmassivedatasets}.
 
 \section{Baum-Welch - M-step}
 
@@ -320,7 +324,7 @@ In the M-step of the Baum-Welch algorithm we now perform Maximum Likelihood Esti
   \pi_{k}^{n e w}=\gamma_{1}(k) 
 \end{equation}
 
-By definition the rows of gamma sum up to 1, so there does not need to be a normalizing denominator.
+By definition the rows of gamma sum up to 1, so a normalizing denominator is not necessary. 
 
 \begin{equation}
    \begin{aligned}
@@ -337,12 +341,11 @@ When summing up $\xi$ the $a_{ij}$ and $b_i(j)$ cancel out because their row are
 
 When summing over every possible j we consider every time point once, so to normalize we divide by the sum over every time index $t$. Note that this formulation of $b$ only applies for Hidden Markov Models with discrete output. Identifying the subset $t \in X_t=j$ does not make sense in a continuos setting. 
 
-The most complex operation during the M-step is computing $a$, which takes $O(TK^2)$. This makes the overall runtime of one Baum-Welch iteration $O(TK^2)$, where T is the number of training samples and K is the number of hidden states. \parencite{miningmassivedatasets}
+The most complex operation during the M-step is computing $a$, which takes $O(TK^2)$. This makes the overall runtime of one Baum-Welch iteration $O(TK^2)$, where T is the number of training samples and K is the number of hidden states \parencite{miningmassivedatasets}.
 
 \section{Continuos Hidden Markov Model}
 
 While the previous calculations are made under the assumption of discrete outputs, there is only little change required to adapt the Baum-Welch algorithm to the continuos case. There are multiple approaches. One is called semi-continuos and works by assigning a normal distribution with mean $\mu_k$ and variance $\sigma_k$ to each hidden state $k$. This changes the probability distribution in the following way:
-
 
 \begin{equation}
 \begin{aligned}
@@ -352,7 +355,7 @@ While the previous calculations are made under the assumption of discrete output
 \end{aligned}
 \end{equation}
 
-$\pi$ and $a$ are unchanged, however $b$ is now represented by two variables $\mu$ and $\sigma$. The formula is more complex so the Lagrange Multiplier solution does not work. So we maximize by setting the derivative to 0. 
+Parameters $\pi$ and $a$ are unchanged, however $b$ is now represented by two variables $\mu$ and $\sigma$. The formula is more complex so the Lagrange Multiplier solution does not work. Thus, we maximize by setting the derivative to 0. 
 
 \begin{equation}
 \begin{aligned}
@@ -370,12 +373,12 @@ $\pi$ and $a$ are unchanged, however $b$ is now represented by two variables $\m
 \label{eq:sigma-def}
 \end{equation}
 
-The semi-continuos approach is nice because it only differs from the discrete approach at this one point during the M-step. It is called semi-continuos because the only available probability distribution is the normal distribution. A more flexible approach is to use Gaussian Mixture Models instead of simple normal distributions, which would looks like this: 
+The semi-continuos approach is favorable because it only differs from the discrete approach at this one point during the M-step. It is called semi-continuos because the only available probability distribution is the normal distribution. A more flexible approach is to use Gaussian Mixture Models instead of simple normal distributions, which looks like this: 
 
 \begin{equation}
   b_{j}(\mathbf{x})=\sum_{k=1}^{M} c_{j k} N\left(\mathbf{x}, \boldsymbol{\mu}_{j k}, \boldsymbol{\Sigma}_{j k}\right) 
 \end{equation}
 
-A Gaussian Mixture model is a weighted sum of normal distributions. This is powerful since it can approximate any continuos function. For each state there are M different normal distributions each with a mean and variance. Also there is $c$, which represents the weights of each distributions for each state. 
+A Gaussian Mixture model is a weighted sum of normal distributions. This is powerful since it can approximate any continuos function. For each state there are $M$ different normal distributions each with a mean and variance. Moreover there is $c$, which represents the weights of each distributions for each state. 
 
-The fully continuos approach introduces a lot of complexity including a new parameter $c$, which makes the training computationally expensive. This makes the semi-continuos model a better approach for most applications including this paper, where the semi-continuos approach is implemented. \parencite{huang2001spoken}
+The fully continuos approach introduces a lot of complexity including a new parameter $c$, which makes the training computationally expensive. This makes the semi-continuos model a better approach for most applications, including this paper, where the semi-continuos approach is implemented \parencite{huang2001spoken}.
