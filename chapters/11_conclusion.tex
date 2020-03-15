@@ -1,0 +1,9 @@
+% !TeX root = ../main.tex
+% Add the above to each chapter to make compiling the PDF easier in some editors.
+\chapter{Conclusion}\label{chapter:conclusion}
+
+We produced a tool to generate time-series using the two methods Hidden Markov Models and Singular Spectrum Analysis. For this we studied the necessary theory behind the approaches and then implemented them in Python. In the case of Hidden Markov Models we also created a distributed implementation using Apache Spark. 
+
+Hidden Markov Models are good tool for generation, although they can not model longer term relationships or seasonality. Singular Spectrum Analysis is a powerful tool for analysis time-series and has some generation capabilities utilizing forecasting. 
+
+Finally we applied the generated time series to benchmarking Apache Flink. We submitted jobs scheduled according to the time-series and observed Flink responding to the work load appropriately. 
