@@ -3,7 +3,7 @@
 
 \chapter{Hidden Markov Models}\label{chapter:hmm}
 
-One of the approaches to generate time series in this thesis are Hidden Markov Models (HMM). HMMs are a powerful tool to model observed data samples of a discrete time-series. They are a generative model which makes them inherently suitable for the task of generating data. It is a flexible approach: the observed data of the time series can be continuously or discretely distributed and the samples can be scalars or vectors. 
+One of the approaches to generate time-series in this thesis are Hidden Markov Models (HMM). HMMs are a powerful tool to model observed data samples of a discrete time-series. They are a generative model which makes them inherently suitable for the task of generating data. It is a flexible approach: the observed data of the time-series can be continuously or discretely distributed and the samples can be scalars or vectors. 
 
 The theory of Hidden Markov Models was originally developed by Baum \parencite{baum1972inequality}. HMMs have a variety of applications. They are especially useful in speech and language related-tasks. They have been used in applications such as speech recognition, speech tagging, and machine translation\parencite{huang2001spoken}.
 
@@ -99,7 +99,7 @@ P\left(X_{t} |X_{1}, X_{2}, \ldots, X_{t-1}, s_{1}^{t}\right)=P\left(X_{t} | s_{
 
 This property assures that each output only depends on its corresponding state. It is independent of all other outputs \parencite{huang2001spoken}.
 
-How can we use Hidden Markov Models to generate time series? Since HMMs are a generative model it is easy: specify the three parameters $A, B, \pi$ according to the model. Then generate a series of hidden states using the start and transition probabilities. Finally, generate the data points according to the emission probabilities. But there is another way: we can learn the parameters from an existing time series. Using those we can then generate new time-series with similar properties to the training time-series. The learning problem can be solved using the \emph{Forward/Backward algorithm} and the \emph{Baum-Welch algorithm}.
+How can we use Hidden Markov Models to generate time-series? Since HMMs are a generative model it is easy: specify the three parameters $A, B, \pi$ according to the model. Then generate a series of hidden states using the start and transition probabilities. Finally, generate the data points according to the emission probabilities. But there is another way: we can learn the parameters from an existing time-series. Using those we can then generate new time-series with similar properties to the training time-series. The learning problem can be solved using the \emph{Forward/Backward algorithm} and the \emph{Baum-Welch algorithm}.
 
 \section{Forward Algorithm}
 
@@ -148,7 +148,7 @@ By reusing the intermediate values we save computation and the runtime becomes $
 
 \section{Backward Algorithm}
 
-Analogous to the Forward Algorithm there is also the Backwards Algorithm. It is defined like this:
+Analogous to the Forward Algorithm there is also the Backward Algorithm. It is defined like this:
 
 \begin{equation}
    \beta_{t}(i)=P\left(X_{t+1:T} | s_{t}=i, \Phi\right) 
@@ -166,15 +166,15 @@ The term $X_{t+1:T}$ refers to the observations from $t+1$ to the end of the seq
 
 The base case is the last row of $\beta$. Since there are no observations following this one, it is the probability of the empty set, which is 0 \parencite{huang2001spoken}.
 
-Why we need both the Forward and Backwards algorithm will become clear when looking at the \emph{Baum-Welch algorithm}.
+Why we need both the Forward and Backward algorithm will become clear when looking at the \emph{Baum-Welch algorithm}.
 
-\section{EM Algorithm}
+\section{EM-Algorithm}
 
 The Baum Welch algorithm is a so-called EM-algorithm. Its goal is the same as in Maximum Likelihood Estimation (MLE). We are trying to find parameters that maximize a probability distribution. The difference is that an EM-algorithm also works with incomplete observed data. In the case of Hidden Markov Models this is the hidden states. 
 
-An EM algorithm deals with the issue of missing data in this way: We do MLE using expected instead of actual data. The initial parameters are guessed. Then during each iteration, we use the current parameters to compute the expectation of the missing data. With the now complete data, we perform MLE to obtain new parameters. This is where the name EM algorithm comes from: E for Expectation and M for Maximization. 
+An EM-algorithm deals with the issue of missing data in this way: We do MLE using expected instead of actual data. The initial parameters are guessed. Then during each iteration, we use the current parameters to compute the expectation of the missing data. With the now complete data, we perform MLE to obtain new parameters. This is where the name EM-algorithm comes from: E for Expectation and M for Maximization. 
  
-Each iteration of the EM algorithm will improve the accuracy of the parameters and they will eventually converge. However, there is no guarantee to find the global maximum this way. We might run into a local maximum. This issue can be avoided by picking good values for the initial guess of parameters. The implementation section will discuss the approach for this.
+Each iteration of the EM-algorithm will improve the accuracy of the parameters and they will eventually converge. However, there is no guarantee to find the global maximum this way. We might run into a local maximum. This issue can be avoided by picking good values for the initial guess of parameters. The implementation section will discuss the approach for this.
 
 \section{Parameter Learning - Fully Observed}
 
@@ -204,7 +204,7 @@ It is simpler to obtain the maximum when taking the $\log$:
 \end{split}
 \end{equation}
 
-Since each part of the sum only has one parameter in it they can be maximized independently. They all have the form: 
+Since each part of the sum only has one parameter in it, they can be maximized independently. They all have the form: 
 
 \begin{equation}
    \begin{aligned}
@@ -214,7 +214,7 @@ Since each part of the sum only has one parameter in it they can be maximized in
   \label{eq:lp-statement}
 \end{equation}
 
-The constraint of summing up to one comes from the definition of the HMM parameters in Equation \eqref{eq:hmm-def}. This is a linear programming problem, which can be solved, for example, using Lagrange Multipliers \parencite{huang2001spoken}. The maximum will be achieved when: 
+The constraint of summing up to 1 comes from the definition of the HMM parameters in Equation \eqref{eq:hmm-def}. This is a linear programming problem, which can be solved, for example, using Lagrange Multipliers \parencite{huang2001spoken}. The maximum will be achieved when: 
 
 \begin{equation}
   x_{i}=\frac{y_{i}}{\sum_{i} y_{i}} 
@@ -308,7 +308,7 @@ Having computed $\xi$ and $\gamma$ we have reformulated the probability distribu
 
 \section{Baum-Welch - M-step}
 
-Plugging in the expectation values from the E-step in the probability distribution yields this formula for the log likelihood:
+Plugging in the expectation values from the E-step in the probability distribution yields this formula for the log-likelihood:
 
 \begin{equation}
 \begin{aligned}

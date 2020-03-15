@@ -3,7 +3,7 @@
 
 \chapter{Baum-Welch Implementation}\label{chapter:hmm-impl}
 
-One of the functionalities of the time series generation tool implemented for this thesis is generating time series using Hidden Markov Models. Specifically, the user can specify training time series to learn HMM parameters, from which the time-series is generated. The learning problem is, of course, solved using the Baum Welch algorithm, which the tool implements. In this section, we will look at the Python implementation of Baum-Welch within the time series generation tool \parencite{tsgenerator}.
+One of the functionalities of the time-series generation tool implemented for this thesis is generating time-series using Hidden Markov Models. Specifically, the user can specify training time-series to learn HMM parameters, from which the time-series is generated. The learning problem is, of course, solved using the Baum Welch algorithm, which the tool implements. In this section, we will look at the Python implementation of Baum-Welch within the time-series generation tool \parencite{tsgenerator}.
 
 \section{Function: fit}
 
@@ -50,23 +50,23 @@ def fit(A, k, it):
 \label{fig:hmm-fit-listing}
 \end{figure}
 
-Figure \ref{fig:hmm-fit-listing} shows the code of the \texttt{fit} function, which is the high-level function implementing the parameter learning for HMMs. It takes the parameters \texttt{A}, \texttt{k}, and \texttt{it}. The parameter \texttt{A} is an array of time series, which are the training data. Parameter \texttt{k} is the number of hidden states in the HMM. The final parameter \texttt{it} is the number of iterations of the Baum-Welch algorithm that will be run. 
+Figure \ref{fig:hmm-fit-listing} shows the code of the \texttt{fit} function, which is the high-level function implementing the parameter learning for HMMs. It takes the parameters \texttt{A}, \texttt{k}, and \texttt{it}. The parameter \texttt{A} is an array of time-series, which are the training data. Parameter \texttt{k} is the number of hidden states in the HMM. The final parameter \texttt{it} is the number of iterations of the Baum-Welch algorithm that will be run. 
 
 The function returns the learned parameters \texttt{startprop}, \texttt{transmat}, \texttt{means}, and \texttt{cov}. The variable \texttt{startprop} represents the start probabilities $\pi$, while \texttt{transmat} are the transition probabilities $a$. This implementation is a semi-continuous HMM, which means that the emission probabilities take the form of $\mu$ and $\sigma$, which are returned as \texttt{means} and \texttt{cov}.
 
-In line 2 the parameters get initialized. We will look at the initialization strategy in detail later. After the initialization follows the main loop, which applies the EM algorithm to the parameters the specified number of times. 
+In line 2 the parameters get initialized. We will look at the initialization strategy in detail later. After the initialization follows the main loop, which applies the EM-algorithm to the parameters the specified number of times. 
 
-The first part of the EM-algorithm implementation initializes variables starting with e signifying that they are part of the E-step. Then the inner loop at line 10 applies the Baum-Welch steps to each of the time series in the training set A. First the forward and backward algorithm are applied to obtain alpha and beta. Both rely on the likelihood, which is computed first then passed into both functions. 
+The first part of the EM-algorithm implementation initializes variables starting with e signifying that they are part of the E-step. Then the inner loop at line 10 applies the Baum-Welch steps to each of the time-series in the training set A. First the forward and backward algorithm are applied to obtain alpha and beta. Both rely on the likelihood, which is computed first then passed into both functions. 
 
 Note that the implementation differs from the theory here. Instead of computing the intermediate values alpha and beta their log is computed. This is done for accuracy. Since the probabilities can get very low there is the risk of underflow, so they are better represented as logs. Only in the very last step, when computing gamma and trans (which is the sum of xi), do we go back to the regular space from log-space. 
 
-The results for each of the training time series get accumulated in the variables starting with e. Since the M-step involves normalization, simply adding them together works. In the case of \texttt{e-trans}, which will be used in the M-step to compute the new transition probabilities, it only receives contributions from time series longer than 1. Time series with only a single data point do not give any information about transitions.
+The results for each of the training time-series get accumulated in the variables starting with e. Since the M-step involves normalization, simply adding them together works. In the case of \texttt{e-trans}, which will be used in the M-step to compute the new transition probabilities, it only receives contributions from time-series longer than 1. Time-series with only a single data point do not give any information about transitions.
 
-Finally using the accumulated data from all training time series in the E-step \texttt{update\_params} performs the M-step and returns new values for the four parameters \texttt{startprop}, \texttt{transprop}, \texttt{means}, and \texttt{cov}.
+Finally using the accumulated data from all training time-series in the E-step \texttt{update\_params} performs the M-step and returns new values for the four parameters \texttt{startprop}, \texttt{transprop}, \texttt{means}, and \texttt{cov}.
 
 \section{Log-Likelihood}
 
-From Equation \eqref{eq:prop-statement} we know that the probability of a time series given current parameters can be computed by summing up the last row of $\alpha$. This is implemented in line 15 in Figure \ref{fig:hmm-fit-listing}. Since we are in log space we add together the probabilities of the individual training time series instead of multiplying them.
+From Equation \eqref{eq:prop-statement} we know that the probability of a time-series given current parameters can be computed by summing up the last row of $\alpha$. This is implemented in line 15 in Figure \ref{fig:hmm-fit-listing}. Since we are in log-space we add together the probabilities of the individual training time-series instead of multiplying them.
 
 \begin{figure}
    \includegraphics{figures/logprop.png}
@@ -109,9 +109,9 @@ def init(components, X):
 \label{fig:hmm-init-listing}
 \end{figure}
 
-While we know that EM-algorithms will converge to a maximum as mentioned before, we are not guaranteed to end up at the global maximum. To avoid getting stuck in local maxima the initial values for the parameters are important. They are picked by the init function shown in Figure \ref{fig:hmm-init-listing}
+While we know that EM-algorithms will converge to a maximum as mentioned before, we are not guaranteed to end up at the global maximum. To avoid getting stuck in local maxima the initial values for the parameters are important. They are picked by the init function shown in Figure \ref{fig:hmm-init-listing}.
 
-Since we are in a semi-continuous HMM the parameters that have to be initialized are $\pi$, $a$, $\mu$, and $\sigma$, or as they are called in code \texttt{startprop}, \texttt{transmat}, \texttt{means}, and \texttt{cov}. The parameters to the function are the number of hidden states \texttt{components} and the training data \texttt{X}, which is either one or multiple time series. The function returns the four initialized parameters. 
+Since we are in a semi-continuous HMM the parameters that have to be initialized are $\pi$, $a$, $\mu$, and $\sigma$, or as they are called in code \texttt{startprop}, \texttt{transmat}, \texttt{means}, and \texttt{cov}. The parameters of the function are the number of hidden states \texttt{components} and the training data \texttt{X}, which is either one or multiple time-series. The function returns the four initialized parameters. 
 
 The means are initialized by running the k-means algorithm on the training data with the number of hidden states of the HMM as the number of clusters k. K-means is an excellent choice for initializing this since we are assuming that the data is generated by k hidden states, which leads to k clusters of data points. 
 
@@ -164,7 +164,7 @@ def log_likelihood(X, k, means, cov):
 \label{fig:hmm-ll-listing}
 \end{figure}
 
-For both the forward and backward algorithm we need the likelihoods of the observed outputs according to the current parameters. This is implemented in the function \texttt{log\_likelihood} shown in Figure \ref{fig:hmm-ll-listing}. The parameters are \texttt{X} the observed time series, \texttt{k} the number of hidden states, \texttt{means} and \texttt{cov} the current parameters for emission probability. The function then computes the likelihood of the observed output at every time point for every hidden state. To compute the likelihood the probability density function of the normal distribution (Equation \eqref{eq:normal-pdf}) is used, specifically the log of that probability. Finally, a matrix with all time and hidden state combinations is returned. 
+For both the forward and backward algorithm we need the likelihoods of the observed outputs according to the current parameters. This is implemented in the function \texttt{log\_likelihood} shown in Figure \ref{fig:hmm-ll-listing}. The parameters are \texttt{X} the observed time-series, \texttt{k} the number of hidden states, \texttt{means} and \texttt{cov} the current parameters for emission probability. The function then computes the likelihood of the observed output at every time point for every hidden state. To compute the likelihood the probability density function of the normal distribution (Equation \eqref{eq:normal-pdf}) is used, specifically the log of that probability. Finally, a matrix with the likelihoods of all time and hidden state combinations is returned. 
 
 \begin{equation}
   \mathcal{N}\left(\mu, \sigma^{2}\right) = \frac{1}{\sigma \sqrt{2 \pi}} e^{-\frac{1}{2}\left(\frac{x-\mu}{\sigma}\right)^{2}} 
@@ -203,7 +203,7 @@ def forward(loglikelihood, start, transition):
 
 Figure \ref{fig:hmm-forward-listing} shows the implementation of the forward algorithm. It takes three parameters \texttt{loglikelihood}, \texttt{start}, and \texttt{transition}. With \texttt{loglikelihood} being the previously computed loglikelihood and \texttt{start} and \texttt{transition} being the current values of the parameters $\pi$  and $a$.
 
-The implementation follows the recursive definition of $\alpha$ from Equation \eqref{eq:alpha-def}. The first row of alpha is computed using start probability and emission probability, in the form of the loglikelihood. Then the remaining rows are computed each based on the previous row. Finally, \texttt{alpha} is returned in matrix form. 
+The implementation follows the recursive definition of $\alpha$ from Equation \eqref{eq:alpha-def}. The first row of alpha is computed using start probability and emission probability, in the form of the log-likelihood. Then the remaining rows are computed each based on the previous row. Finally, \texttt{alpha} is returned in matrix form. 
 
 The notable differences to the theoretical formulas are that we are again in log-space. We take the log of the parameters \texttt{start} and \texttt{transition} at the beginning. The parameter \texttt{loglikelihood} is in log-space already. When trying to take the log of 0 Python will return \texttt{-inf} and show a warning. This warning is disabled since this is the desired behavior. Being in log-space also turns all the multiplications in the definition of alpha to additions. However, there is also a sum in the recursive part of the alpha definition. This gets computed with the help of the \texttt{logsumexp} function. 
 
@@ -239,7 +239,7 @@ This is the case in the forward algorithm code among other places in the Baum-We
 \log \sum_{i=1}^{n} e^{x_{i}}=a+\log \sum_{i=1}^{n} e^{x_{i}-a}
 \end{equation}
 
-Suppose all of the $e^{x_i}$ are very large but close together. Then by choosing an appropriate $a$ we can compute the sum of the smaller $e^{x_i-a}$ then make up the difference in log space by adding $a$ again. This avoids inaccuracies. A reasonable choice for $a$ is the maximum value of the sum. This is the approach taken in the logsumexp implementation in Figure \ref{fig:logsumexp-listing} in line 2. There is the edge case if one part of the sum is negative infinity, which will lead to the whole sum evaluating to negative infinity \parencite{mllecture}.
+Suppose all of the $e^{x_i}$ are very large but close together. Then by choosing an appropriate $a$ we can compute the sum of the smaller $e^{x_i-a}$ then make up the difference in log-space by adding $a$ again. This avoids inaccuracies. A reasonable choice for $a$ is the maximum value of the sum. This is the approach taken in the logsumexp implementation in Figure \ref{fig:logsumexp-listing} in line 2. There is an edge case if one part of the sum is negative infinity, which will lead to the whole sum evaluating to negative infinity \parencite{mllecture}.
 
 
 \section{Function: backward}
@@ -326,7 +326,7 @@ def compute_trans(a, b, ll, transition):
 The second variable in the E-step is $\xi$. It does not appear directly in the high-level \texttt{fit} function, rather it is computed implicitly in the \texttt{compute\_trans} function seen in Figure \ref{fig:hmm-computetrans-listing}. The function takes in the parameters \texttt{a}, \texttt{b}, \texttt{ll}, \texttt{transition}. They represent $\alpha$, $\beta$, the current emission probability, and the current transition probability respectively. 
 
 The variable $\xi$ is computed according to the second formula given by the Equation \eqref{eq:xi-def}. In this formula, the denominator is computed from the last row of $\alpha$, which is implemented in line 6. Similar to the forward and backward algorithm the multiplications and divisions from the formula turn into additions and subtractions in the implementation, since we are in log-space. 
-We never actually use $\xi$ directly: whenever it appears it is summed up over t. Hence, instead of returning the three dimensional $\xi$ with parameters $i$,$j$, and $t$, the function sums up over $t$ during the computation. The function then returns the two dimensional summed $\xi$ with parameters $i$ and $j$. This summation once again uses "\texttt{logsumexp}. At this point, we have again reached the final step of a computation. This means we leave log-space, which happens in line 28 of the \texttt{fit} function in Figure \ref{fig:hmm-fit-listing}. The return value of \texttt{compute\_trans} gets exponentiated. 
+We never actually use $\xi$ directly: whenever it appears it is summed up over t. Hence, instead of returning the three dimensional $\xi$ with parameters $i$,$j$, and $t$, the function sums up over $t$ during the computation. The function then returns the two dimensional summed $\xi$ with parameters $i$ and $j$. This summation once again uses \texttt{logsumexp}. At this point, we have again reached the final step of a computation. This means we leave log-space, which happens in line 28 of the \texttt{fit} function in Figure \ref{fig:hmm-fit-listing}. The return value of \texttt{compute\_trans} gets exponentiated. 
 
 \section{M-step}
 
@@ -355,7 +355,7 @@ Having completed the E-step the final operation of the Baum-Welch algorithm is t
 
 The function takes in the variables accumulated in the E-step: \texttt{sumgamma}, \texttt{xsumgamma}, \texttt{xsumgammasquared}, \texttt{start}, and \texttt{trans} and it returns the new parameters of the HMM $\pi$, $a$, $\mu$, and $\sigma$ as \texttt{norm\_start}, \texttt{norm\_trans}, \texttt{means}, and \texttt{cov}. 
 
-The parameters \texttt{start} and \texttt{trans} are already the numerators of the new $\pi$ and $a$. Since these two are defined to add up to one, they just have to be normalized to obtain the new parameters. The remaining parameters are the sum $\gamma$ over its rows, the dot-product of $\gamma$ and $x$, and the dot-product of $\gamma$ and $x^2$. They come in when computing the remaining two parameters. 
+The parameters \texttt{start} and \texttt{trans} are already the numerators of the new $\pi$ and $a$. Since these two are defined to add up to 1, they just have to be normalized to obtain the new parameters. The remaining parameters are the sum $\gamma$ over its rows, the dot-product of $\gamma$ and $x$, and the dot-product of $\gamma$ and $x^2$. They come in when computing the remaining two parameters. 
 
 The parameter $\mu$ representing the means of the semi-continuous HMM is computed according to Equation \eqref{eq:mu-def}. It is the fraction of $x$ dot $\gamma$ over sum of $\gamma$. This makes intuitive sense: for each hidden state, the mean is the weighted average of all the data-points, with the weight being the likelihood of being in that state at that time point. 
 

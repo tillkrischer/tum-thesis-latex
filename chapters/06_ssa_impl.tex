@@ -3,7 +3,7 @@
 
 \chapter{SSA implementation}\label{chapter:ssa-impl}
 
-The time-series generation tool implements the method of generating time series using Singular Spectrum Analysis discussed above. We will look at the Python implementations of the different steps of the SSA algorithm. \parencite{tsgenerator}
+The time-series generation tool implements the method of generating time-series using Singular Spectrum Analysis discussed above. We will look at the Python implementations of the different steps of the SSA algorithm \parencite{tsgenerator}.
 
 \section{Generation}
 
@@ -34,13 +34,13 @@ The high-level function handling the time-series generation with SSA is called \
 
 Since this is a high-level function that gets called directly with the command-line arguments passed by the user, \texttt{orig} is a path to a file containing the original time-series. We obtain a numpy array of the time-series from \texttt{parseCSV}.
 
-The function then follows the steps outlined in the theory section above. First, we compute the trajectory matrix, named \texttt{C} here, using the \texttt{embed} function. Then we decompose the trajectory matrix to obtain the different component matrices and the corresponding eigenvectors. 
+The function then follows the steps outlined in the theory section above. First, we compute the trajectory matrix, named \texttt{C}, using the \texttt{embed} function. Then we decompose the trajectory matrix to obtain the different component matrices and the corresponding eigenvectors. 
 
-Next, we obtain the reconstructed series \texttt{x\_tilde} from the components we get from the decomposition. Then the recurrence vector \texttt{R} is computed from the eigenvectors. 
+Next, we obtain the reconstructed series \texttt{x\_tilde} from the components we got from the decomposition. Then the recurrence vector \texttt{R} is computed from the eigenvectors. 
 
 The variable \texttt{additional\_samples} holds the number of steps we have to forecast to reach the requested time-series length for the generation. Since it is possible to request a shorter series than the original, this is floored at 0. 
 
-Finally, the forecast function returns the concatenation of the approximation of the original time series and the forecasted samples. At this point, if the requested length is shorter than the original series, \texttt{fc} will be longer than \texttt{l}. That is why it gets cut off at that point in the return statement.
+Finally, the forecast function returns the concatenation of the approximation of the original time-series and the forecasted samples. At this point, if the requested length is shorter than the original series, \texttt{fc} will be longer than \texttt{l}. That is why it gets cut off at that point in the return statement.
 
 \newpage
 
@@ -90,7 +90,7 @@ def decompose(X):
 
 Figure \ref{fig:ssa-embed} shows the function \texttt{embed}. It computes the trajectory matrix of time-series \texttt{X} using a window length of \texttt{k}. The matrix will have size $k \times l-k+1$. With \texttt{l} being the length of X. 
 
-Figure \ref{fig:ssa-decompose} shows the \texttt{decompose} function, which decomposes the trajectory matrix into component matrices one per eigenvector.  We first obtain the rank of the matrix since the rank determines the number of eigenvectors a matrix has. Then we apply Singular Value Decomposition on the square of \texttt{X}. Only the first two results of the SVD are useful to us: the matrix \texttt{U}, whose columns are the eigenvectors, and \texttt{S}, which contains the eigenvalues. 
+Figure \ref{fig:ssa-decompose} shows the \texttt{decompose} function, which decomposes the trajectory matrix into component matrices, one per eigenvector.  We first obtain the rank of the matrix since the rank determines the number of eigenvectors a matrix has. Then we apply Singular Value Decomposition on the square of \texttt{X}. Only the first two results of the SVD are useful to us: the matrix \texttt{U}, whose columns are the eigenvectors, and \texttt{S}, which contains the eigenvalues. 
 
 We then loop through all the eigenvectors. In each iteration, we extract the eigenvector from the \texttt{U} matrix and compute \texttt{P} and \texttt{Q} according to their definitions. The component matrix \texttt{Xcomp} is the outer product of the vectors \texttt{P} and \texttt{Q}. 
 
@@ -138,7 +138,7 @@ def reconstruct(Xcomp, ncomponents):
 \label{fig:ssa-reconstruct}
 \end{figure}
 
-Next up is the reconstruction step. Figure \ref{fig:ssa-reconstruct} shows the function implementing this. The parameters are \texttt{Xcomp}, the component matrices obtained above and \texttt{ncomponents}, the specified number of components to use. Then according to the parameter we sum up the first $n$ components to obtain the reconstructed matrix \texttt{Xfull}. To go from the matrix form back to time-series form the \texttt{diagonal\_avg} function is applied. 
+Next up is the reconstruction step. Figure \ref{fig:ssa-reconstruct} shows the function implementing this. The parameters are \texttt{Xcomp}, the component matrices obtained above, and \texttt{ncomponents}, the specified number of components to use. Then according to the parameter we sum up the first $n$ components to obtain the reconstructed matrix \texttt{Xfull}. To go from the matrix form back to time-series form the \texttt{diagonal\_avg} function is applied. 
 
 Note that it is not necessary to do these operations in the order of first summing up the matrices then converting to a time-series. The other way of first converting all the components to time-series and then summing up those is equally correct. 
 
@@ -185,4 +185,4 @@ Having computed $R$ we can then do the forecast using function \texttt{forecast}
 
 The function \texttt{forecast} will return one array containing both the reconstructed time-series and the forecasted steps concatenated together. For this, we first create a shallow copy of \texttt{x\_tilde} in \texttt{new\_series}. Then according to the number of additional steps required we append the forecasted values. Each new value is the dot product of $R^T$ and the current last $d$ entries in \texttt{new\_series}, where $d$ is the length of the $R$ vector. 
 
-This covers all the relevant code for time-series generation using SSA in the time series generation tool. 
+This covers all the relevant code for time-series generation using SSA in the time-series generation tool. 
