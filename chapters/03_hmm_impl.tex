@@ -5,7 +5,7 @@
 
 One of the functionalities of the time series generation tool implemented for this thesis is generating time series using Hidden Markov Models. Specifically the user is able to specify training time series to learn HMM parameters, from which the time-series is generated. The learning problem is, of course, solved using the Baum Welch algorithm, which the tool implements. In this section we will look at the Python implementation of Baum-Welch within the time series generation tool \parencite{tsgenerator}.
 
-\section{fit() Function}
+\section{Function: fit}
 
 \begin{figure}
 \begin{singlespace}
@@ -46,7 +46,7 @@ def fit(A, k, it):
 \end{lstlisting}
 \end{singlespace}
    
-\caption{HMM fit function}    
+\caption{HMM Function: fit}    
 \label{fig:hmm-fit-listing}
 \end{figure}
 
@@ -64,13 +64,13 @@ The results for each of the training time series get accumulated in the e variab
 
 Finally using the accumulated data from all training time series in the E-step \texttt{update\_params} performs the M-step and returns new values for the four parameters \texttt{startprop}, \texttt{transprop}, \texttt{means}, and \texttt{cov}.
 
-\section{Log Likelihood}
+\section{Log-Likelihood}
 
 From Equation \eqref{eq:prop-statement} we know that the probability of a time series given current parameters can be computed by summing up the last row of $\alpha$. This is implemented in line 15 in Figure \ref{fig:hmm-fit-listing}. Since we are in log space we add together the probabilities of the individual training time series instead of multiplying them.
 
 \begin{figure}
    \includegraphics{figures/logprop.png}
-   \caption{Logprop during training}
+   \caption{Logprop During Training}
       
    \label{fig:lopprop-graph}
 \end{figure}
@@ -79,7 +79,7 @@ Figure \ref{fig:lopprop-graph} shows an example of the progression of the log pr
 
 The probability converges relatively quickly, in this case after 10 iterations. After that the change is not noticeable anymore. This implementation works by specifying a number of iterations. However, a different system based on monitoring the log probability is also possible. After each iteration we check if the change in probability is significant, if not we are converged and the learning is stopped.
 
-\section{init() Function}
+\section{Function: init}
 
 \begin{figure}
 \begin{singlespace}
@@ -105,7 +105,7 @@ def init(components, X):
 \end{lstlisting}
 \end{singlespace}
    
-\caption{HMM init function}    
+\caption{HMM Function: init}    
 \label{fig:hmm-init-listing}
 \end{figure}
 
@@ -139,7 +139,7 @@ a =
 \end{pmatrix}
 \end{equation}
 
-\section{log\_likelihood Function}
+\section{Function: log\_likelihood}
 
 \begin{figure}
 \begin{singlespace}
@@ -160,7 +160,7 @@ def log_likelihood(X, k, means, cov):
 \end{lstlisting}
 \end{singlespace}
    
-\caption{HMM log\_likelihood function}    
+\caption{HMM Function: log\_likelihood}    
 \label{fig:hmm-ll-listing}
 \end{figure}
 
@@ -171,7 +171,7 @@ For both the forward and backward algorithm we need the likelihoods of the obser
   \label{eq:normal-pdf}
 \end{equation}
 
-\section{forward Function}
+\section{Function: forward}
 
 \begin{figure}
 \begin{singlespace}
@@ -197,7 +197,7 @@ def forward(loglikelihood, start, transition):
 \end{lstlisting}
 \end{singlespace}
    
-\caption{HMM forward function}    
+\caption{HMM Function: forward}    
 \label{fig:hmm-forward-listing}
 \end{figure}
 
@@ -207,7 +207,7 @@ The implementation follows the recursive definition of $\alpha$ from Equation \e
 
 The notable differences to the theoretical formulas are that we are again in log-space. We take the log of the parameters \texttt{start} and \texttt{transition} at the beginning. The parameter \texttt{loglikelihood} is in log-space already. When trying to take the log of 0 Python will return \texttt{-inf} and show a warning. This warning is disabled since this is the desired behavior. Being in log-space also turns all the multiplications in the definition of alpha to additions. However, there is also a sum in the recursive part of the alpha definition. This gets computed with the help of the \texttt{logsumexp} function. 
 
-\section{logsumexp Function}
+\section{Function: logsumexp}
 
 \begin{figure}
 \begin{singlespace}
@@ -223,7 +223,7 @@ def logsumexp(ns):
 
 \end{lstlisting}
 \end{singlespace}
-\caption{logsumexp function}    
+\caption{Function: logsumexp}    
 \label{fig:logsumexp-listing}
 \end{figure}
 
@@ -239,9 +239,10 @@ This is the case in the forward algorithm code among other places in the Baum-We
 \log \sum_{i=1}^{n} e^{x_{i}}=a+\log \sum_{i=1}^{n} e^{x_{i}-a}
 \end{equation}
 
-Suppose all of the $e^{x_i}$ are very large but close together. Then by choosing a appropriate $a$ we can compute the sum of the smaller $e^{x_i-a}$ then make up the difference in log space by adding $a$ again. This avoids inaccuracies. A reasonable choice for $a$ is the maximum value of the sum. This is the approach taken in the logsumexp implementation in line 2. There is the edge case if one part of the sum is negative infinity, which will lead to the whole sum evaluating to negative infinity \parencite{mllecture}.
+Suppose all of the $e^{x_i}$ are very large but close together. Then by choosing a appropriate $a$ we can compute the sum of the smaller $e^{x_i-a}$ then make up the difference in log space by adding $a$ again. This avoids inaccuracies. A reasonable choice for $a$ is the maximum value of the sum. This is the approach taken in the logsumexp implementation in Figure \ref{fig:logsumexp-listing} in line 2. There is the edge case if one part of the sum is negative infinity, which will lead to the whole sum evaluating to negative infinity \parencite{mllecture}.
 
-\section{backwards Function}
+
+\section{Function: backwards}
 
 The backwards function computes $\beta$ according to its definition in Equation \ref{eq:beta-def}. Its implementation is shown in Figure \ref{fig:hmm-backwards-listing}. The consideration are essentially the same as for the forward algorithm. 
 
@@ -268,7 +269,7 @@ def backward(loglikelihood, transition):
    return beta
 \end{lstlisting}
 \end{singlespace}
-\caption{HMM backwards function}    
+\caption{HMM Function: backwards}    
 \label{fig:hmm-backwards-listing}
 \end{figure}
 
@@ -292,7 +293,7 @@ We have already seen the computation of $\gamma$ in the \texttt{fit} function in
     return np.exp(g_norm)
 \end{lstlisting}
 \end{singlespace}
-\caption{lognormalize function}    
+\caption{Function: lognormalize}    
 \label{fig:lognormalize-listing}
 \end{figure}
 
@@ -318,7 +319,7 @@ def compute_trans(a, b, ll, transition):
    return logxisum
 \end{lstlisting}
 \end{singlespace}
-\caption{HMM compute\_trans function}    
+\caption{HMM Function: compute\_trans}    
 \label{fig:hmm-computetrans-listing}
 \end{figure}
 
@@ -346,7 +347,7 @@ def update_params(sumgamma, xgammasum, xgammasumsquared, start, trans):
    return norm_start, norm_trans, means, cov
 \end{lstlisting}
 \end{singlespace}
-\caption{HMM update\_params function}    
+\caption{HMM Function: update\_params}    
 \label{fig:hmm-updateparams-listing}
 \end{figure}
 

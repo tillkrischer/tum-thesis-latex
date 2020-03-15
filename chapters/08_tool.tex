@@ -20,7 +20,7 @@ There are a lot of command line options available in this tool. We will first go
 
 \texttt{---display}: By default the time series is only output in CSV text form. If this option is enabled the tool will display a graph of the generated series as well. This is very helpful for visualization!
 
-\section{hmm-learn}
+\section{Method: hmm-learn}
 
 The first available method is \texttt{hmm-learn}. The idea is to specify training time series, from which the tool learns HMM parameters that are then used to generate the time-series. This method comes with its own options:
 
@@ -54,7 +54,7 @@ def generate_hmm(startprop, transmat, means, cov, l):
     return samples
 \end{lstlisting}
 \end{singlespace}
-\caption{generate\_hmm function}    
+\caption{HMM Function: generate\_hmm}    
 \label{fig:hmm-generate}
 \end{figure}
 
@@ -62,7 +62,7 @@ We have looked at the implementation of the parameter learning using the Baum-We
 
 The idea is to generate a hidden state sequence based on the start and transition probabilities. For this \texttt{np.random.choice} from numpy is used, which allows drawing from a set with a given probability vector $p$. From the hidden states we obtain the corresponding means and variances and draw the data points from a normal distribution using \texttt{np.random.normal}.
 
-\section{hmm-param}
+\section{Method: hmm-param}
 
 This method works by specifying the HMM parameters manually instead of learning them from training data. This method offers the following options: 
 
@@ -76,7 +76,7 @@ This method works by specifying the HMM parameters manually instead of learning 
 
 Note that the dimensions of these parameters have to match up. \texttt{hmm-means}, \texttt{hmm-cov}, and \texttt{hmm-start-prop} all need to have the same length $k$, while \texttt{hmm-trans-prop} needs to be the square of that: $k^2$. 
 
-\section{hmm-simple-param}
+\section{Method: hmm-simple-param}
 
 This tool already requires a lot of commandline options to be specified. However in the \texttt{hmm-param} method this becomes unreasonable. This is why the \texttt{hmm-simple-param} method exists, where you only have to specify the means: 
 
@@ -106,7 +106,7 @@ The remaining parameters will be chosen in this way:
 \end{split}
 \end{equation}
 
-\section{ssa}
+\section{Method: ssa}
 
 The last method of generating is Singular Spectrum Analysis forecasting. This also offers some commandline options: 
 
@@ -125,11 +125,11 @@ The last method of generating is Singular Spectrum Analysis forecasting. This al
     --hmm-iterations 10 --show-progress --length 20 --display
 \end{lstlisting}
 \includegraphics[scale=0.7]{figures/hmm-learn}
-\caption{hmm-learn Example}    
+\caption{Example: hmm-learn}    
 \label{fig:hmm-learn-example}
 \end{figure}
 
-Figure \ref{fig:hmm-learn-example} shows an example of the usage of the \texttt{hmm-learn} method. The specified training data is a time-series of daily page views of Wikipedia in 2019 \parencite{wikipedia}
+Figure \ref{fig:hmm-learn-example} shows an example of the usage of the \texttt{hmm-learn} method. The specified training data is a time-series of daily page views of Wikipedia in 2019 \parencite{wikipedia}.
 
 \newpage
 
@@ -139,7 +139,7 @@ Figure \ref{fig:hmm-learn-example} shows an example of the usage of the \texttt{
     --hmm-simple-means 10 30 40 70 --display
 \end{lstlisting}
 \includegraphics[scale=0.7]{figures/hmm-param-simple}
-\caption{hmm-learn Example}    
+\caption{Example: hmm-param-simple}    
 \label{fig:hmm-param-simple-example}
 \end{figure}
 
@@ -156,7 +156,7 @@ Figure \ref{fig:hmm-param-simple-example} shows an example of the usage of the \
     0.125 0.625 0.125 0.125 0.125 0.125 0.625 --display
 \end{lstlisting}
 \includegraphics[scale=0.7]{figures/hmm-param}
-\caption{hmm-param Example}    
+\caption{Example: hmm-param}    
 \label{fig:hmm-param-example}
 \end{figure}
 
@@ -170,7 +170,7 @@ Figure \ref{fig:hmm-param-example} uses the exact same parameters as Figure \ref
     airpassenger-list.csv --ssa-window 36 --ssa-components 13 --display
 \end{lstlisting}
 \includegraphics[scale=0.7]{figures/ssa}
-\caption{ssa Example}    
+\caption{Example: ssa}    
 \label{fig:ssa-example}
 \end{figure}
 

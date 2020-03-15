@@ -3,9 +3,9 @@
 
 \chapter{Hidden Markov Models}\label{chapter:hmm}
 
-One of the approaches to generate time series in this thesis are Hidden Markov Models (HMM). HMMs are a powerful tool to model observed data samples of a discrete time series. They are a generative model which makes them inherently suitable for the task of generating data. It is a flexible approach: the observed data of the time series can be continuously or discretely distributed and the samples can be scalars or vectors. 
+One of the approaches to generate time series in this thesis are Hidden Markov Models (HMM). HMMs are a powerful tool to model observed data samples of a discrete time-series. They are a generative model which makes them inherently suitable for the task of generating data. It is a flexible approach: the observed data of the time series can be continuously or discretely distributed and the samples can be scalars or vectors. 
 
-The theory of Hidden Markov Models was originally developed by Baum \parencite{baum1972inequality}. HMMs have a variety of applications. They are especially useful in speech and language related tasks. They have been used in applications such as speech recognition, speech tagging, and machine translation\parencite{huang2001spoken}.
+The theory of Hidden Markov Models was originally developed by Baum \parencite{baum1972inequality}. HMMs have a variety of applications. They are especially useful in speech and language related-tasks. They have been used in applications such as speech recognition, speech tagging, and machine translation\parencite{huang2001spoken}.
 
 \section{Markov Chain}
 To understand Hidden Markov models we first have to understand the regular \emph{Markov Chain}. Let $\mathbf{X}=X_{1}, X_{2}, \ldots X_{n}$ be a sequence of random variables. The probability of the sequence is $P\left(X_{1}, X_{2}, \ldots, X_{n}\right)$ and using Bayes rule get: 
@@ -168,7 +168,7 @@ The base case is the last row of $\beta$. Since there are no observations follow
 
 Why we need both the Forward and Backwards algorithm will become clear when looking at the \emph{Baum-Welch algorithm}.
 
-\section{EM algorithm}
+\section{EM Algorithm}
 
 The Baum Welch algorithm is a so called EM-algorithm. Its goal is the same as in Maximum Likelihood Estimation (MLE). We are trying to find parameters that maximize a probability distribution. The difference is that a EM-algorithm also works with incomplete observed data. In the case of Hidden Markov Models this are the hidden states. 
 
@@ -176,7 +176,7 @@ An EM algorithm deals with the issue of missing data in this way: We do MLE usin
  
 Each iteration of the EM algorithm will improve the accuracy of the parameters and they will eventually converge. However, there is no guarantee to find the global maximum this way. We might run into a local maximum. This issue can be avoided by picking good values for the initial guess of parameters. The implementation section will discuss the approach for this.
 
-\section{Parameter Learning - Fully observed}
+\section{Parameter Learning - Fully Observed}
 
 In the Baum Welch algorithm the parameters we are trying to estimate are $A$, $B$, and $\pi$. Suppose we have fully observed data for multiple sequences, that is we know both the observations and all the hidden states $X_{1: T_{n}}^{(n)}, s_{1: T_{n}}^{(n)}$. Then we can obtain the parameters using Maximum Likelihood Estimation on this probability distribution:
 
